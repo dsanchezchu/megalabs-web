@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';  // Importar createRoot desde react-dom/client
 import App from './App';
-import 'styles/index.css';  // Asumiendo que tienes un archivo de estilos global
+import './styles/index.css';  // Asumiendo que tienes un archivo de estilos global
 
 // Buscar el elemento root en el DOM
 const container = document.getElementById('root');
