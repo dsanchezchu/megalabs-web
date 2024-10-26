@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../components/Header/HomePageHeader';
 import Sidebar from '../components/Sidebar/HomePageSidebar';
 import Main from '../components/Main/HomePageMain';
-import Footer from '../components/Footer/HomePageFooter';
+import Footer from '../components/Footer/PageFooter';
 
 const HomePage = () => {
     return (
