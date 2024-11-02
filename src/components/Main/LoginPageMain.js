@@ -77,7 +77,10 @@ const LoginPageMain = () => {
                 type="submit"
                 className="btn btn-primary w-full hover:bg-primary-focus transition duration-200 ease-in-out"
             >
+                <Link to="/dashboard">
                 Iniciar sesión
+                </Link>
+
             </button>
         </form>
     );

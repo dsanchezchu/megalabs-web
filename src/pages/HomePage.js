@@ -1,24 +1,21 @@
 import React from 'react';
 import Header from '../components/Header/HomePageHeader';
 import Sidebar from '../components/Sidebar/HomePageSidebar';
-import Main from '../components/Main/HomePageMain';
+import HomePageMain from '../components/Main/HomePageMain';
 import Footer from '../components/Footer/PageFooter';
 
 const HomePage = () => {
     return (
-        <div className="flex">
-            <Header/>
-            <div className="flex h-screen">
-                <Sidebar/>
-                <div className="flex flex-col flex-grow">
-                    <Main>
-                        <h2 className="text-2xl font-bold mb-6">Welcome to Megalabs Dashboard</h2>
-                        <p>This is the main content of the homepage.</p>
-                    </Main>
+        <div className="flex flex-col h-screen">
+            <Header />
+            <div className="flex flex-grow">
+                <div className="flex flex-grow justify-center items-center">
+                    <HomePageMain className="w-full h-full" />
                 </div>
             </div>
-            </div>
-            );
-            };
+            <Footer />
+        </div>
+    );
+};
 
-            export default HomePage;
+export default HomePage;
