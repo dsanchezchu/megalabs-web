@@ -1,12 +1,10 @@
 import React from 'react';
-import LoginHeader from '../components/Header/LoginPageHeader';
 import LoginFooter from '../components/Footer/PageFooter';
 import LoginMain from '../components/Main/LoginPageMain';
 
 const LoginPage = () => {
     return (
         <div className="flex flex-col min-h-screen">
-            <LoginHeader />
             <main
                 className="flex-grow flex items-center justify-center bg-gray-100 bg-cover bg-center"
                 style={{ backgroundImage: "url('https://megalabsperu.com.pe/wp-content/uploads/2020/02/Cabezal-premio-CFI-IMG_9994-Grupal-lateral-x2.jpg')" }}
