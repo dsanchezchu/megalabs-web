@@ -1,36 +1,33 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import OrdersPage from '../pages/OrdersPage';
 import SchedulePage from '../pages/SchedulePage';
 import PrivateRoute from '../routes/PrivateRoute';
-import Sidebar from '../components/Sidebar/HomePageSidebar';
+import DashboardLayout from "../components/Layout/DashboardLayout";
+import AuditReportPage from "../pages/AuditReportPage";
 
 function AppRoutes() {
     return (
-        <Router>
-            <div className="flex h-screen">
-                <Sidebar />
-                <div className="flex-grow">
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/login" element={<LoginPage />} />
+        <Routes>
+            {/* Rutas Públicas */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-                        {/* Rutas protegidas */}
-                        <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-                        <Route path="/orders" element={<PrivateRoute><OrdersPage /></PrivateRoute>} />
-                        <Route path="/schedule" element={<PrivateRoute><SchedulePage /></PrivateRoute>} />
+            {/* Rutas protegidas del Dashboard */}
+            <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
+                <Route path="" element={<DashboardPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="schedule" element={<SchedulePage />} />
+                <Route path="audit" element={<AuditReportPage />} />
+            </Route>
 
-                        {/* Redirigir al login si no encuentra la ruta */}
-                        <Route path="*" element={<LoginPage />} />
-                    </Routes>
-                </div>
-            </div>
-        </Router>
+            {/* Redirigir al login si no encuentra la ruta */}
+            <Route path="*" element={<LoginPage />} />
+        </Routes>
     );
 }
 
 export default AppRoutes;
-

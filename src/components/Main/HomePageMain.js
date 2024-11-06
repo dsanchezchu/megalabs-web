@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 const HomePageMain = ({ children }) => {
     return (
         <main className="flex flex-col items-center w-full bg-white">
+
             {/* Sección de imagen principal con texto sobrepuesto */}
             <div className="relative w-full h-[400px]">
                 <img
-                    src="ruta/de/la/imagen.jpg" // Reemplaza con la ruta real de la imagen
+                    src="" // Reemplaza con la ruta real de la imagen
                     alt="Familia usando dispositivo"
                     className="w-full h-full object-cover"
                 />
