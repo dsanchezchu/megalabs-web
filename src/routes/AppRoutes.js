@@ -8,6 +8,7 @@ import SchedulePage from '../pages/SchedulePage';
 import PrivateRoute from '../routes/PrivateRoute';
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import AuditReportPage from "../pages/AuditReportPage";
+import ReportPage from "../pages/ReportPage";
 
 function AppRoutes() {
     return (
@@ -21,7 +22,7 @@ function AppRoutes() {
                 <Route path="" element={<DashboardPage />} />
                 <Route path="orders" element={<OrdersPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
-                <Route path="audit" element={<AuditReportPage />} />
+                <Route path="audit" element={<ReportPage />} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}

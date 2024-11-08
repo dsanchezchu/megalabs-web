@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const LoginPageMain = () => {
     const [dni, setDni] = useState('');
@@ -22,7 +23,7 @@ const LoginPageMain = () => {
         try {
             // Enviar las credenciales al endpoint de inicio de sesión
             const response = await axios.post(
-                'http://localhost:8080/api/v1/auth/login',
+                `${API_BASE_URL}/auth/login`,
                 { dni, password },
                 { headers: { 'Content-Type': 'application/json' } }
             );
