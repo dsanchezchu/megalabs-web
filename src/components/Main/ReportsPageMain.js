@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/apiConfig';
 
-const AuditReport = () => {
+const ReportsPageMain = () => {
     const [impact, setImpact] = useState('');
     const [nonConformities, setNonConformities] = useState('');
     const [recommendations, setRecommendations] = useState('');
@@ -117,4 +117,4 @@ const AuditReport = () => {
     );
 };
 
-export default AuditReport;
+export default ReportsPageMain;

@@ -1,10 +1,10 @@
 import React from 'react';
+import Calendar from "../components/Main/Calendar";
 
 const SchedulePage = () => {
     return (
         <div>
-            <h2 className="text-2xl font-bold">Schedule</h2>
-            <p>View your schedule and upcoming deliveries.</p>
+            <Calendar />
         </div>
     );
 };

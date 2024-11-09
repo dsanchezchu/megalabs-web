@@ -1,10 +1,10 @@
 import React from 'react';
+import DashboardPageMain from "../components/Main/DashboardPageMain";
 
 const DashboardPage = () => {
     return (
         <div>
-            <h2 className="text-2xl font-bold">Dashboard</h2>
-            <p>Welcome to the dashboard!</p>
+            <DashboardPageMain />
         </div>
     );
 };

@@ -1,10 +1,10 @@
 import React from 'react';
+import OrdersPageMain from "../components/Main/OrdersPageMain";
 
 const OrdersPage = () => {
     return (
         <div>
-            <h2 className="text-2xl font-bold">Orders</h2>
-            <p>Manage your orders here.</p>
+            <OrdersPageMain />
         </div>
     );
 };
