@@ -11,14 +11,14 @@ const OrdersPageMain = () => {
     const [dateFilter, setDateFilter] = useState({ start: "", end: "" });
     const itemsPerPage = 5;
 
-    const ventasData = [
-        { id: 1, producto: "Laptop HP", cantidad: 5, precio: 999.99, fecha: "2024-01-15", categoria: "Electrónicos" },
-        { id: 2, producto: "Monitor Dell", cantidad: 8, precio: 299.99, fecha: "2024-01-16", categoria: "Electrónicos" },
-        { id: 3, producto: "Teclado Mecánico", cantidad: 12, precio: 89.99, fecha: "2024-01-17", categoria: "Accesorios" },
-        { id: 4, producto: "Mouse Inalámbrico", cantidad: 15, precio: 45.99, fecha: "2024-01-18", categoria: "Accesorios" },
-        { id: 5, producto: "Impresora Canon", cantidad: 3, precio: 199.99, fecha: "2024-01-19", categoria: "Electrónicos" },
-        { id: 6, producto: "Webcam HD", cantidad: 10, precio: 79.99, fecha: "2024-01-20", categoria: "Accesorios" },
-        { id: 7, producto: "Disco Duro SSD", cantidad: 20, precio: 129.99, fecha: "2024-01-21", categoria: "Componentes" }
+    const productoData = [
+        { id_producto: 1, fecha_venta: "2024-01-01", nombre: "Paracetamol", stock: "EN_STOCK", cantidad: 50, precio: 2.5 },
+        { id_producto: 2, fecha_venta: "2024-01-02", nombre: "Ibuprofeno", stock: "AGOTADO", cantidad: 30, precio: 3.2 },
+        { id_producto: 3, fecha_venta: "2024-01-03", nombre: "Alcohol en Gel", stock: "EN_STOCK", cantidad: 20, precio: 15.0 },
+        { id_producto: 4, fecha_venta: "2024-01-04", nombre: "Guantes Quirúrgicos", stock: "EN_STOCK", cantidad: 10, precio: 8.0 },
+        { id_producto: 5, fecha_venta: "2024-01-05", nombre: "Termómetro Digital", stock: "AGOTADO", cantidad: 5, precio: 75.0 },
+        { id_producto: 6, fecha_venta: "2024-01-06", nombre: "Jeringas Desechables", stock: "EN_STOCK", cantidad: 100, precio: 0.9 },
+        { id_producto: 7, fecha_venta: "2024-01-07", nombre: "Oxímetro de Pulso", stock: "EN_STOCK", cantidad: 3, precio: 120.0 }
     ];
 
     const handleSort = (key) => {
@@ -30,9 +30,9 @@ const OrdersPageMain = () => {
     };
 
     const sortedData = React.useMemo(() => {
-        if (!sortConfig.key) return ventasData;
+        if (!sortConfig.key) return productoData;
 
-        return [...ventasData].sort((a, b) => {
+        return [...productoData].sort((a, b) => {
             if (a[sortConfig.key] < b[sortConfig.key]) {
                 return sortConfig.direction === "asc" ? -1 : 1;
             }
@@ -41,12 +41,12 @@ const OrdersPageMain = () => {
             }
             return 0;
         });
-    }, [ventasData, sortConfig]);
+    }, [productoData, sortConfig]);
 
     const filteredData = React.useMemo(() => {
         return sortedData.filter(item => {
             if (!dateFilter.start || !dateFilter.end) return true;
-            const itemDate = new Date(item.fecha);
+            const itemDate = new Date(item.fecha_venta);
             const startDate = new Date(dateFilter.start);
             const endDate = new Date(dateFilter.end);
             return itemDate >= startDate && itemDate <= endDate;
@@ -60,57 +60,30 @@ const OrdersPageMain = () => {
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    const ventasPorCategoria = React.useMemo(() => {
-        const categorias = {};
-        ventasData.forEach(item => {
-            if (!categorias[item.categoria]) {
-                categorias[item.categoria] = 0;
-            }
-            categorias[item.categoria] += item.cantidad * item.precio;
+    const ventasPorEstadoStock = React.useMemo(() => {
+        const estados = { EN_STOCK: 0, AGOTADO: 0 };
+        productoData.forEach(item => {
+            estados[item.stock] += item.cantidad * item.precio;
         });
-        return categorias;
-    }, [ventasData]);
-
-    const ventasPorFecha = React.useMemo(() => {
-        const fechas = {};
-        ventasData.forEach(item => {
-            if (!fechas[item.fecha]) {
-                fechas[item.fecha] = 0;
-            }
-            fechas[item.fecha] += item.cantidad * item.precio;
-        });
-        return fechas;
-    }, [ventasData]);
+        return estados;
+    }, [productoData]);
 
     const barChartData = {
-        labels: Object.keys(ventasPorCategoria),
+        labels: Object.keys(ventasPorEstadoStock),
         datasets: [
             {
-                label: "Ventas por Categoría",
-                data: Object.values(ventasPorCategoria),
-                backgroundColor: "rgba(24, 163, 84, 0.5)",
-                borderColor: "rgb(24, 163, 84)",
+                label: "Ventas por Estado de Stock",
+                data: Object.values(ventasPorEstadoStock),
+                backgroundColor: ["rgba(24, 163, 84, 0.5)", "rgba(255, 99, 132, 0.5)"],
+                borderColor: ["rgb(24, 163, 84)", "rgb(255, 99, 132)"],
                 borderWidth: 1
-            }
-        ]
-    };
-
-    const lineChartData = {
-        labels: Object.keys(ventasPorFecha),
-        datasets: [
-            {
-                label: "Tendencia de Ventas",
-                data: Object.values(ventasPorFecha),
-                fill: false,
-                borderColor: "rgb(24, 163, 84)",
-                tension: 0.1
             }
         ]
     };
 
     return (
         <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <h1 className="text-3xl font-bold mb-6 text-theme-color-neutral">Reporte de Ventas</h1>
+            <h1 className="text-3xl font-bold mb-6 text-theme-color-neutral">Reporte de Ventas por Producto</h1>
 
             <div className="mb-6">
                 <div className="flex gap-4 mb-4">
@@ -138,14 +111,15 @@ const OrdersPageMain = () => {
                     <table className="w-full text-left border-collapse">
                         <thead>
                         <tr className="bg-theme-color-primary text-white">
-                            <th className="p-4 cursor-pointer" onClick={() => handleSort("producto")}>
+                            <th className="p-4 cursor-pointer" onClick={() => handleSort("nombre")}>
                                 <div className="flex items-center gap-2">
                                     Producto
-                                    {sortConfig.key === "producto" && (
+                                    {sortConfig.key === "nombre" && (
                                         sortConfig.direction === "asc" ? <BsArrowUp /> : <BsArrowDown />
                                     )}
                                 </div>
                             </th>
+                            <th className="p-4">Estado</th>
                             <th className="p-4 cursor-pointer" onClick={() => handleSort("cantidad")}>
                                 <div className="flex items-center gap-2">
                                     Cantidad
@@ -156,31 +130,23 @@ const OrdersPageMain = () => {
                             </th>
                             <th className="p-4 cursor-pointer" onClick={() => handleSort("precio")}>
                                 <div className="flex items-center gap-2">
-                                    Precio
+                                    Precio (S/)
                                     {sortConfig.key === "precio" && (
                                         sortConfig.direction === "asc" ? <BsArrowUp /> : <BsArrowDown />
                                     )}
                                 </div>
                             </th>
-                            <th className="p-4 cursor-pointer" onClick={() => handleSort("fecha")}>
-                                <div className="flex items-center gap-2">
-                                    Fecha
-                                    {sortConfig.key === "fecha" && (
-                                        sortConfig.direction === "asc" ? <BsArrowUp /> : <BsArrowDown />
-                                    )}
-                                </div>
-                            </th>
-                            <th className="p-4">Total</th>
+                            <th className="p-4">Fecha Venta</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {paginatedData.map((venta) => (
-                            <tr key={venta.id} className="border-b hover:bg-gray-50">
-                                <td className="p-4">{venta.producto}</td>
-                                <td className="p-4">{venta.cantidad}</td>
-                                <td className="p-4">${venta.precio.toFixed(2)}</td>
-                                <td className="p-4">{new Date(venta.fecha).toLocaleDateString()}</td>
-                                <td className="p-4">${(venta.cantidad * venta.precio).toFixed(2)}</td>
+                        {paginatedData.map((producto) => (
+                            <tr key={producto.id_producto} className="border-b hover:bg-gray-50">
+                                <td className="p-4">{producto.nombre}</td>
+                                <td className="p-4">{producto.stock}</td>
+                                <td className="p-4">{producto.cantidad}</td>
+                                <td className="p-4">S/{producto.precio.toFixed(2)}</td>
+                                <td className="p-4">{new Date(producto.fecha_venta).toLocaleDateString()}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -200,14 +166,10 @@ const OrdersPageMain = () => {
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <div className="mt-8">
                 <div className="bg-white p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Ventas por Categoría</h2>
+                    <h2 className="text-xl font-semibold mb-4">Ventas por Estado de Stock</h2>
                     <Bar data={barChartData} />
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Tendencia de Ventas</h2>
-                    <Line data={lineChartData} />
                 </div>
             </div>
         </div>
