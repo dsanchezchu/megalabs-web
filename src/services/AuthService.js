@@ -1,8 +1,9 @@
 // src/services/AuthService.js
 import axios from 'axios';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const logout = (navigate) => {
-    axios.post('http://localhost:8080/api/v1/auth/logout', {}, {
+    axios.post(`${API_BASE_URL}/auth/logout`, {}, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }

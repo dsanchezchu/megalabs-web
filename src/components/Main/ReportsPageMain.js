@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/apiConfig';
 
-const AuditReport = () => {
+const ReportsPageMain = () => {
     const [impact, setImpact] = useState('');
     const [nonConformities, setNonConformities] = useState('');
     const [recommendations, setRecommendations] = useState('');
@@ -15,31 +16,26 @@ const AuditReport = () => {
             impacto: impact.toUpperCase(),
             inconformidades: nonConformities,
             recomendaciones: recommendations,
-            estadoReporte: 'APROBADO',
-            enviado: false,
             fechaCreacion: new Date().toISOString(),
+            estadoReporte: 'PENDIENTE',
+            enviado: false
         };
 
         try {
-            // Obtener el token del localStorage
-            const token = localStorage.getItem('token');
-
-            // Hacer la solicitud con el token en el encabezado
             const response = await axios.post(
-                'http://localhost:8080/api/v1/api/auditorias/crear',
+                `${API_BASE_URL}/reportes/auditoria-interna/crear`,
                 reportData,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // Incluir el token en el encabezado de autorización
-                    },
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Agrega el token en la cabecera
+                    }
                 }
             );
-
             setMessage('Reporte enviado correctamente');
             setError('');
 
-            // Resetear los campos
+            // Resetear los campos después de enviar
             setImpact('');
             setNonConformities('');
             setRecommendations('');
@@ -48,7 +44,7 @@ const AuditReport = () => {
             setError(
                 error.response && error.response.data.message
                     ? error.response.data.message
-                    : 'Error al enviar el reporte. El token es inexistente o inválido.'
+                    : 'Error al enviar el reporte. Inténtalo nuevamente.'
             );
         }
     };
@@ -57,6 +53,7 @@ const AuditReport = () => {
         <div className="max-w-lg mx-auto p-6 bg-base-200 rounded-lg shadow-lg">
             <h1 className="text-2xl font-bold mb-4 text-center">Reporte de Auditorías Internas</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Clasificación de Impacto */}
                 <div>
                     <label htmlFor="impact" className="block text-lg font-semibold">
                         Clasificación de Impacto
@@ -68,13 +65,16 @@ const AuditReport = () => {
                         onChange={(e) => setImpact(e.target.value)}
                         required
                     >
-                        <option value="" disabled>Seleccionar impacto</option>
+                        <option value="" disabled>
+                            Seleccionar impacto
+                        </option>
                         <option value="BAJO">Impacto Bajo</option>
                         <option value="MEDIO">Impacto Medio</option>
                         <option value="ALTO">Impacto Alto</option>
                     </select>
                 </div>
 
+                {/* Inconformidades */}
                 <div>
                     <label htmlFor="nonConformities" className="block text-lg font-semibold">
                         Inconformidades
@@ -89,6 +89,7 @@ const AuditReport = () => {
                     ></textarea>
                 </div>
 
+                {/* Recomendaciones */}
                 <div>
                     <label htmlFor="recommendations" className="block text-lg font-semibold">
                         Recomendaciones
@@ -103,15 +104,17 @@ const AuditReport = () => {
                     ></textarea>
                 </div>
 
+                {/* Botón de Enviar */}
                 <button type="submit" className="btn btn-primary w-full">
                     Enviar Reporte
                 </button>
             </form>
 
+            {/* Mensajes de Confirmación y Error */}
             {message && <p className="mt-4 text-center text-green-500 font-semibold">{message}</p>}
             {error && <p className="mt-4 text-center text-red-500 font-semibold">{error}</p>}
         </div>
     );
 };
 
-export default AuditReport;
+export default ReportsPageMain;

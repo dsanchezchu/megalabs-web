@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome} from "react-icons/fa";
+import {FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome, FaBell} from "react-icons/fa";
+import {FaFilePen} from "react-icons/fa6";
+import { MdOutlineMail } from "react-icons/md";
 
 const DashboardPageSidebar = () => {
     const token = localStorage.getItem('token');
@@ -27,9 +29,21 @@ const DashboardPageSidebar = () => {
                         <FaCalendarAlt className="text-xl"/> {/* Ícono de calendario */}
                         <span>Programación</span>
                     </Link>
-                    <Link to="/dashboard/audit" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+                    <Link to="/dashboard/report" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
                         <FaFileAlt className="text-xl"/> {/* Ícono de auditoría */}
-                        <span>Auditoría</span>
+                        <span>Reportes</span>
+                    </Link>
+                    <Link to="/dashboard/notification" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+                        <FaBell className="text-xl"/> {/* Ícono de notificaciones */}
+                        <span>Notificaciones</span>
+                    </Link>
+                    <Link to="/dashboard/medicalSample" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+                        <FaFilePen className="text-xl"/> {/* Ícono de notificaciones */}
+                        <span>Formulario Muestras Medicas</span>
+                    </Link>
+                    <Link to="/dashboard/notifications" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+                        <MdOutlineMail />{/* Ícono de notificaciones */}
+                        <span>Notificar Representantes</span>
                     </Link>
                 </nav>
             </div>

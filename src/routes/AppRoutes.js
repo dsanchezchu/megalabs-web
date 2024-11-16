@@ -7,7 +7,10 @@ import OrdersPage from '../pages/OrdersPage';
 import SchedulePage from '../pages/SchedulePage';
 import PrivateRoute from '../routes/PrivateRoute';
 import DashboardLayout from "../components/Layout/DashboardLayout";
-import AuditReportPage from "../pages/AuditReportPage";
+import ReportPage from "../pages/ReportPage";
+import NotificationPage from "../pages/NotificationPage";
+import MedicalSamplesPage from "../pages/MedicalSamplesPage";
+import NotificationRepresentanteMain from "../components/Main/NotificationRepresentanteMain";
 
 function AppRoutes() {
     return (
@@ -15,13 +18,15 @@ function AppRoutes() {
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-
             {/* Rutas protegidas del Dashboard */}
             <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
                 <Route path="" element={<DashboardPage />} />
                 <Route path="orders" element={<OrdersPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
-                <Route path="audit" element={<AuditReportPage />} />
+                <Route path="report" element={<ReportPage />} />
+                <Route path="notification" element={<NotificationPage />} />
+                <Route path="medicalSample" element={<MedicalSamplesPage />} />
+                <Route path="notifications" element={<NotificationRepresentanteMain />} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}
