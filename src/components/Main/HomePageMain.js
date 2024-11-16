@@ -9,7 +9,7 @@ const HomePageMain = ({ children }) => {
             {/* Sección de imagen principal con texto sobrepuesto */}
             <div className="relative w-full h-[400px]">
                 <img
-                    src="" // Reemplaza con la ruta real de la imagen
+                    src="https://elcomercio-tromecom-prod.web.arc-cdn.net/resizer/v2/RREJJBRMQZFTHH52ITXR357MAM.jpg?auth=076683e3059a8363da15db8269a83580de106823578fe18a9a8984a4a0e66854&width=1200&height=682&smart=true&quality=90" // Reemplaza con la ruta real de la imagen
                     alt="Familia usando dispositivo"
                     className="w-full h-full object-cover"
                 />
