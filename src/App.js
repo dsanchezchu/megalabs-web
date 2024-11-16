@@ -1,12 +1,18 @@
+// src/App.js
 import React from 'react';
-import AppRoutes from './routes/AppRoutes'; // Ajusta el path según tu estructura de carpetas
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+import HeaderPage from './components/Header/HeaderPage';
 
 function App() {
-  return (
-      <div className="App">
-        <AppRoutes />
-      </div>
-  );
+    return (
+        <Router>
+            <HeaderPage /> {/* Asegúrate de que HeaderPage esté bajo el Router */}
+            <AppRoutes />
+        </Router>
+    );
 }
 
 export default App;
+
+

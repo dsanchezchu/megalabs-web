@@ -1,0 +1,74 @@
+.notification-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+
+.notification-container h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.notification-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+textarea {
+    resize: none;
+    height: 100px;
+}
+
+.btn-submit {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-submit:hover {
+    background-color: #45a049;
+}
+
+.success-message {
+    color: #4CAF50;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.error-message {
+    color: #FF0000;
+    margin-top: 10px;
+    text-align: center;
+}
