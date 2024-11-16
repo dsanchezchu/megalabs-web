@@ -1,39 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { FiRefreshCcw } from 'react-icons/fi'; // Importa el icono de recarga de react-icons
+import { FiRefreshCcw } from 'react-icons/fi';
 import ReportsTable from '../components/Table/ReportsTable';
-import { getAuditReports, getComplianceReports } from '../services/ReportService';
+import { getSalesReports, getAuditReports, getComplianceReports } from '../services/ReportService';
 
 const ReportPage = () => {
+    const [salesReports, setSalesReports] = useState([]);
     const [auditReports, setAuditReports] = useState([]);
     const [complianceReports, setComplianceReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Función para obtener los datos
     const fetchReports = () => {
         setLoading(true);
-        setError(null); // Reinicia el error al intentar recargar
-        Promise.all([getAuditReports(), getComplianceReports()])
-            .then(([auditResponse, complianceResponse]) => {
+        setError(null);
+
+        Promise.all([getSalesReports(), getAuditReports(), getComplianceReports()])
+            .then(([salesResponse, auditResponse, complianceResponse]) => {
+                setSalesReports(salesResponse.data);
                 setAuditReports(auditResponse.data);
                 setComplianceReports(complianceResponse.data);
                 setLoading(false);
             })
-            .catch(error => {
-                console.error("Error al obtener reportes:", error);
-                setError("Error al obtener reportes");
+            .catch((error) => {
+                console.error('Error al obtener reportes:', error);
+                setError('Error al obtener reportes');
                 setLoading(false);
             });
     };
 
     useEffect(() => {
-        // Llamar a fetchReports inmediatamente
         fetchReports();
-
-        // Configurar el intervalo para actualizar cada 5 minutos (300000 ms)
-        const intervalId = setInterval(fetchReports, 300000);
-
-        // Limpiar el intervalo cuando el componente se desmonte
+        const intervalId = setInterval(fetchReports, 300000); // Actualización automática cada 5 minutos
         return () => clearInterval(intervalId);
     }, []);
 
@@ -43,10 +40,23 @@ const ReportPage = () => {
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Reportes de Auditoría</h1>
+                <h1 className="text-2xl font-bold">Reportes de Ventas</h1>
                 <button
                     onClick={fetchReports}
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none flex items-center"
+                    className="text-blue-600 hover:text-blue-800 flex items-center"
+                    title="Recargar reportes"
+                >
+                    <FiRefreshCcw className="mr-1" />
+                    Recargar
+                </button>
+            </div>
+            <ReportsTable reports={salesReports} type="ventas" />
+
+            <div className="flex items-center justify-between mt-8 mb-4">
+                <h1 className="text-2xl font-bold">Reportes de Auditorías Internas</h1>
+                <button
+                    onClick={fetchReports}
+                    className="text-blue-600 hover:text-blue-800 flex items-center"
                     title="Recargar reportes"
                 >
                     <FiRefreshCcw className="mr-1" />
@@ -56,10 +66,10 @@ const ReportPage = () => {
             <ReportsTable reports={auditReports} type="auditoria" />
 
             <div className="flex items-center justify-between mt-8 mb-4">
-                <h1 className="text-2xl font-bold">Reportes de Cumplimiento</h1>
+                <h1 className="text-2xl font-bold">Reportes de Cumplimiento Regulatorio</h1>
                 <button
                     onClick={fetchReports}
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none flex items-center"
+                    className="text-blue-600 hover:text-blue-800 flex items-center"
                     title="Recargar reportes"
                 >
                     <FiRefreshCcw className="mr-1" />
@@ -72,4 +82,3 @@ const ReportPage = () => {
 };
 
 export default ReportPage;
-
