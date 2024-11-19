@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import {FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome, FaBell} from "react-icons/fa";
 import {FaFilePen} from "react-icons/fa6";
 import { MdOutlineMail } from "react-icons/md";
+import { AiOutlineMedicineBox } from "react-icons/ai";
+
 
 const DashboardPageSidebar = () => {
     const token = localStorage.getItem('token');
@@ -46,6 +48,10 @@ const DashboardPageSidebar = () => {
                         <span>Notificar Representantes</span>
                     </Link>
                 </nav>
+                <Link to="/dashboard/medicamentos" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+                    <AiOutlineMedicineBox />{/* Ícono de notificaciones */}
+                    <span>Medicamentos</span>
+                </Link>
             </div>
         </aside>
     );
