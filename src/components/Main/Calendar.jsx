@@ -1,216 +1,391 @@
-import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight, FaTimes, FaTrash } from "react-icons/fa";
-import { programarCita, cancelarCita } from "../../services/CalendarService"; // Asegúrate de que la ruta sea correcta
+import React, { useState, useEffect, useMemo } from "react";
+import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
+import {
+  programarCita,
+  cancelarCita,
+  obtenerCitasPorRepresentante,
+  actualizarCita,
+} from "../../services/CalendarService";
+import { format, isSameDay, isBefore, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
+import { es } from "date-fns/locale";
+
+const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails, title, mode }) => {
+  const isReadOnly = eventDetails.estado === "INASISTENCIA";
+
+  return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+          <h3 className="text-lg font-semibold mb-4">{title}</h3>
+          <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+              aria-label="Close"
+          >
+            <FaTimes className="w-6 h-6" />
+          </button>
+          <form onSubmit={onSubmit}>
+            <div className="space-y-4">
+              {/* Mostrar el nombre solo si está en modo edición */}
+              {mode === "edit" && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Nombre del Cliente</label>
+                    <input
+                        type="text"
+                        value={eventDetails.nombreCliente || ""} // Si está vacío, muestra ""
+                        className="input input-bordered w-full"
+                        readOnly // Deshabilitado en modo edición
+                    />
+                  </div>
+              )}
+              {/* Motivo */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Motivo</label>
+                <select
+                    value={eventDetails.motivo}
+                    onChange={(e) =>
+                        setEventDetails((prev) => ({ ...prev, motivo: e.target.value }))
+                    }
+                    className="input input-bordered w-full"
+                    disabled={isReadOnly}
+                    required
+                >
+                  {motivos.map((motivo) => (
+                      <option key={motivo} value={motivo}>
+                        {motivo}
+                      </option>
+                  ))}
+                </select>
+              </div>
+              {/* Hora de la Cita */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Hora de la Cita</label>
+                <input
+                    type="time"
+                    value={eventDetails.fechaHora.split("T")[1]?.substring(0, 5)}
+                    onChange={(e) => {
+                      const fechaBase = eventDetails.fechaHora.split("T")[0];
+                      const nuevaHora = e.target.value;
+                      if (nuevaHora) {
+                        setEventDetails((prev) => ({
+                          ...prev,
+                          fechaHora: `${fechaBase}T${nuevaHora}:00`,
+                        }));
+                      }
+                    }}
+                    className="input input-bordered w-full"
+                    disabled={isReadOnly}
+                    required
+                />
+              </div>
+              {/* Estado */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Estado</label>
+                <select
+                    value={eventDetails.estado}
+                    onChange={(e) =>
+                        setEventDetails((prev) => ({ ...prev, estado: e.target.value }))
+                    }
+                    className="input input-bordered w-full"
+                    disabled={isReadOnly}
+                >
+                  <option value="PENDIENTE">PENDIENTE</option>
+                  <option value="ASISTENCIA">ASISTENCIA</option>
+                  <option value="INASISTENCIA">INASISTENCIA</option>
+                </select>
+              </div>
+              {/* Botones */}
+              {!isReadOnly && (
+                  <div className="flex justify-between">
+                    <button type="submit" className="btn btn-primary">
+                      Guardar Cambios
+                    </button>
+                    <button type="button" onClick={onClose} className="btn btn-error">
+                      Cancelar
+                    </button>
+                  </div>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
+  );
+};
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
     nombreCliente: "",
-    motivo: "",
-    fechaHora: "",
+    motivo: "NINGUNO",
+    fechaHora: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
+    estado: "PENDIENTE",
   });
+  const [editEvent, setEditEvent] = useState(null);
+  const [dniRepresentante, setDniRepresentante] = useState("");
 
-  // Obtener eventos al montar el componente
+  const motivos = [
+    "NINGUNO",
+    "ENTREGA_DE_MUESTRAS",
+    "RECOJO_DE_ESTUDIOS",
+    "GENERACION_DE_ORDEN_DE_COMPRA",
+  ];
+
+  // Navegar entre meses
+  const navigateMonth = (direction) => {
+    setCurrentDate((prevDate) => {
+      const updatedDate = new Date(prevDate);
+      updatedDate.setMonth(updatedDate.getMonth() + direction);
+      return updatedDate;
+    });
+  };
+
+  // Cargar el DNI desde localStorage
   useEffect(() => {
-    // Aquí puedes agregar una función para obtener eventos desde la API si es necesario
-    // setEvents(eventsData); // Actualiza el estado con los eventos obtenidos
+    const dni = localStorage.getItem("dni");
+    setDniRepresentante(dni);
   }, []);
 
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const days = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
-    return { days, firstDay };
-  };
+  // Obtener las citas desde la API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const fetchedEvents = await obtenerCitasPorRepresentante(dniRepresentante);
+        const updatedEvents = fetchedEvents.map((event) => ({
+          ...event,
+          nombreCliente: event.clienteNombre || "", // Asegúrate de incluir el nombre del cliente
+          colorClass:
+              event.estado === "INASISTENCIA"
+                  ? "bg-red-200 text-red-800"
+                  : event.estado === "ASISTENCIA"
+                      ? "bg-green-200 text-green-800"
+                      : "bg-blue-200 text-blue-800",
+        }));
+        setEvents(updatedEvents);
 
-  const navigateMonth = (direction) => {
-    setCurrentDate(
-      new Date(currentDate.setMonth(currentDate.getMonth() + direction))
-    );
-  };
+      } catch (error) {
+        console.error("Error al cargar las citas:", error);
+      }
+    };
 
-  const handleDateClick = (day) => {
-    setSelectedDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-    );
-    setShowEventModal(true);
-  };
+    if (dniRepresentante) fetchEvents();
+  }, [dniRepresentante]);
 
+  // Programar nueva cita
   const handleEventSubmit = async (e) => {
     e.preventDefault();
 
-    const fechaHora = `${selectedDate.toISOString().split("T")[0]}T${newEvent.fechaHora}`;
-
+    const fechaCompleta = `${format(selectedDate, "yyyy-MM-dd")}T${newEvent.fechaHora.split("T")[1]}`;
     try {
-      // Llamar al servicio para programar la cita
-      const data = await programarCita(newEvent.nombreCliente, newEvent.motivo, fechaHora);
+      const newEventData = await programarCita(
+          newEvent.nombreCliente,
+          newEvent.motivo,
+          fechaCompleta,
+          dniRepresentante
+      );
 
-      // Actualizar eventos después de programar la cita
-      setEvents([...events, data]);
+      setEvents([...events, { ...newEventData, colorClass: getColorClass(newEventData.estado) }]);
       setShowEventModal(false);
-      setNewEvent({ nombreCliente: "", motivo: "", fechaHora: "" });
+      setNewEvent({
+        nombreCliente: "",
+        motivo: "NINGUNO",
+        fechaHora: "",
+        estado: "PENDIENTE",
+      });
+
+      alert("Cita programada correctamente.");
     } catch (error) {
-      console.error("Error al programar la cita", error);
+      console.error("Error al programar la cita:", error);
+      alert("Hubo un error al programar la cita.");
     }
   };
 
-  const deleteEvent = async (id) => {
+  // Editar cita
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+
+    const updatedEventData = {
+      motivo: editEvent.motivo,
+      fechaHora: editEvent.fechaHora,
+      estado: editEvent.estado,
+    };
+
     try {
-      // Llamar al servicio para cancelar la cita
-      await cancelarCita(id);
+      const updatedEvent = await actualizarCita(editEvent.id, updatedEventData);
 
-      // Eliminar evento del estado
-      const updatedEvents = events.filter((event) => event.id !== id);
-      setEvents(updatedEvents);
+      setEvents(
+          events.map((event) =>
+              event.id === updatedEvent.id
+                  ? { ...updatedEvent, colorClass: getColorClass(updatedEvent.estado) }
+                  : event
+          )
+      );
+
+      setShowEditModal(false);
+      setEditEvent(null);
+      alert("La cita ha sido actualizada correctamente.");
     } catch (error) {
-      console.error("Error al cancelar la cita", error);
+      console.error("Error al actualizar la cita:", error);
+      alert("Hubo un error al guardar los cambios.");
     }
   };
 
-  const renderCalendar = () => {
-    const { days, firstDay } = getDaysInMonth(currentDate);
-    const blanks = Array(firstDay).fill(null);
-    const daysArray = Array.from({ length: days }, (_, i) => i + 1);
+  // Cancelar cita
+  const handleCancelEvent = async () => {
+    if (!editEvent) {
+      alert("No se seleccionó ninguna cita para cancelar.");
+      return;
+    }
 
-    return [...blanks, ...daysArray].map((day, index) => {
-      if (!day) return <div key={`blank-${index}`} className="p-4" />;
+    try {
+      const canceledEvent = await cancelarCita(editEvent.id);
 
-      const currentDateEvents = events.filter(
-        (event) =>
-          new Date(event.fechaHora).getDate() === day &&
-          new Date(event.fechaHora).getMonth() === currentDate.getMonth() &&
-          new Date(event.fechaHora).getFullYear() === currentDate.getFullYear()
+      setEvents(
+          events.map((event) =>
+              event.id === canceledEvent.id
+                  ? { ...canceledEvent, colorClass: getColorClass(canceledEvent.estado) }
+                  : event
+          )
+      );
+
+      setShowEditModal(false);
+      setEditEvent(null);
+      alert("La cita ha sido cancelada correctamente.");
+    } catch (error) {
+      console.error("Error al cancelar la cita:", error);
+      alert("Hubo un error al cancelar la cita.");
+    }
+  };
+
+  // Determinar color según estado
+  const getColorClass = (estado) => {
+    switch (estado) {
+      case "INASISTENCIA":
+        return "bg-red-200 text-red-800";
+      case "ASISTENCIA":
+        return "bg-green-200 text-green-800";
+      default:
+        return "bg-blue-200 text-blue-800";
+    }
+  };
+
+  // Renderizar el calendario
+  const RenderCalendar = () => {
+    const daysInMonth = useMemo(() => {
+      return eachDayOfInterval({
+        start: startOfMonth(currentDate),
+        end: endOfMonth(currentDate),
+      });
+    }, [currentDate]);
+
+    const firstDayOfMonth = daysInMonth[0].getDay();
+    const blanks = Array(firstDayOfMonth).fill(null);
+
+    return [...blanks, ...daysInMonth].map((day, index) => {
+      const dayEvents = events.filter((event) =>
+          isSameDay(new Date(event.fechaHora), day)
       );
 
       return (
-        <div
-          key={day}
-          className="p-4 border border-gray-200 min-h-[100px] relative cursor-pointer hover:bg-gray-50 transition-colors"
-          onClick={() => handleDateClick(day)}
-        >
-          <span className="font-semibold">{day}</span>
-          <div className="mt-2 space-y-1">
-            {currentDateEvents.map((event) => (
-              <div
-                key={event.id}
-                className="bg-theme-color-primary text-black p-1 rounded text-sm truncate"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {event.nombreCliente} - {event.motivo}
-                <button
-                  onClick={() => deleteEvent(event.id)}
-                  className="ml-2 text-red-500 hover:text-red-700"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
+          <div
+              key={day?.toISOString() || `blank-${index}`}
+              className={`p-4 border border-gray-300 ${
+                  day ? "bg-white" : "bg-gray-100"
+              } rounded-lg shadow hover:shadow-lg transition cursor-pointer min-h-[140px] overflow-hidden`}
+              onClick={() => day && handleDateClick(day)}
+          >
+            {day && (
+                <>
+              <span className="block font-bold text-lg text-gray-700">
+                {format(day, "d")}
+              </span>
+                  <div className="mt-2 space-y-2 max-h-[100px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                    {dayEvents.map((event) => (
+                        <div
+                            key={event.id}
+                            className={`p-2 rounded-lg text-sm truncate flex items-center justify-between ${event.colorClass} hover:bg-opacity-90`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditEvent(event);
+                              setShowEditModal(true);
+                            }}
+                        >
+                          {event.clienteNombre} - {event.motivo}
+                        </div>
+                    ))}
+                  </div>
+                </>
+            )}
           </div>
-        </div>
       );
     });
   };
 
+  // Manejar clic en fecha
+  const handleDateClick = (day) => {
+    const now = new Date();
+    if (isBefore(day, now.setHours(0, 0, 0, 0))) {
+      alert("No puedes programar citas en un día anterior al actual.");
+      return;
+    }
+
+    setSelectedDate(day);
+    setShowEventModal(true);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => navigateMonth(-1)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <FaChevronLeft />
-          </button>
-          <h2 className="text-xl font-bold">
-            {currentDate.toLocaleDateString("es-ES", {
-              month: "long",
-              year: "numeric",
-            })}
-          </h2>
-          <button
-            onClick={() => navigateMonth(1)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <FaChevronRight />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-7 gap-px">
-          {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
-            <div key={day} className="p-4 font-semibold text-center">
-              {day}
-            </div>
-          ))}
-          {renderCalendar()}
-        </div>
-      </div>
-
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Programar Nueva Cita</h3>
-              <button
-                onClick={() => setShowEventModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes />
-              </button>
-            </div>
-            <form onSubmit={handleEventSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Nombre del Cliente</label>
-                  <input
-                    type="text"
-                    value={newEvent.nombreCliente}
-                    onChange={(e) =>
-                      setNewEvent({ ...newEvent, nombreCliente: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                    required
-                  />
+      <div className="max-w-7xl mx-auto p-8">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="flex items-center justify-between mb-8">
+            <button onClick={() => navigateMonth(-1)} className="btn btn-circle">
+              <FaChevronLeft />
+            </button>
+            <h2 className="text-3xl font-bold capitalize">
+              {format(currentDate, "MMMM yyyy", { locale: es })}
+            </h2>
+            <button onClick={() => navigateMonth(1)} className="btn btn-circle">
+              <FaChevronRight />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-4">
+            {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
+                <div key={day} className="p-4 font-semibold text-center text-gray-500 uppercase text-lg">
+                  {day}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Motivo</label>
-                  <input
-                    type="text"
-                    value={newEvent.motivo}
-                    onChange={(e) =>
-                      setNewEvent({ ...newEvent, motivo: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Fecha y Hora</label>
-                  <input
-                    type="datetime-local"
-                    value={newEvent.fechaHora}
-                    onChange={(e) =>
-                      setNewEvent({ ...newEvent, fechaHora: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
-                >
-                  Programar Cita
-                </button>
-              </div>
-            </form>
+            ))}
+            {RenderCalendar()}
           </div>
         </div>
-      )}
-    </div>
+
+        {showEventModal && (
+            <EventModal
+                onClose={() => setShowEventModal(false)}
+                onSubmit={handleEventSubmit}
+                motivos={motivos}
+                eventDetails={newEvent}
+                setEventDetails={setNewEvent}
+                title="Programar Nueva Cita"
+                mode="create"
+            />
+        )}
+
+        {showEditModal && editEvent && (
+            <EventModal
+                onClose={() => {
+                  setShowEditModal(false);
+                  setEditEvent(null);
+                }}
+                onSubmit={handleEditSubmit}
+                motivos={motivos}
+                eventDetails={editEvent}
+                setEventDetails={setEditEvent}
+                title="Editar Cita"
+                mode="edit"
+            />
+        )}
+      </div>
   );
 };
 
