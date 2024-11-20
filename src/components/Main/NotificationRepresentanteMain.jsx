@@ -1,29 +1,39 @@
 import React, { useState } from "react";
 import { sendNotification } from "../../services/NotificationService";
-import "./NotificationRepresentanteMain.css"; // Importar los estilos
+import ReactModal from "react-modal";
+import { FaSpinner } from "react-icons/fa";
+import "./NotificationRepresentanteMain.css";
 
 const NotificationRepresentanteMain = () => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
-    const [response, setResponse] = useState("");
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [modalContent, setModalContent] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-        setResponse("");
-        setError("");
+        e.preventDefault();
+        setLoading(true);
+        setModalContent("");
 
         try {
-            const result = await sendNotification(email, message); // Llamar al servicio
-            setResponse(result); // Mostrar el mensaje de éxito
+            const result = await sendNotification(email, message);
+            setModalContent(`✅ Notificación enviada exitosamente a ${email}`);
         } catch (err) {
-            setError(err); // Mostrar el mensaje de error
+            setModalContent(`❌ Error al enviar la notificación: ${err.message || "Ocurrió un error"}`);
+        } finally {
+            setLoading(false);
+            setIsModalOpen(true);
         }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
     };
 
     return (
         <div className="notification-container">
-            <h1>Notificar a Representante</h1>
+            <h1 className="notification-title">Notificar a Representante</h1>
             <form onSubmit={handleSubmit} className="notification-form">
                 <div className="form-group">
                     <label htmlFor="email">Correo Electrónico:</label>
@@ -46,11 +56,27 @@ const NotificationRepresentanteMain = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn-submit">Enviar Notificación</button>
+                <button type="submit" className="btn-submit" disabled={loading}>
+                    {loading ? <FaSpinner className="spinner" /> : "Enviar Notificación"}
+                </button>
             </form>
-            {response && <p className="success-message">{response}</p>}
-            {error && <p className="error-message">{error}</p>}
+
+            {modalContent && (
+                <ReactModal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    className="modal-content"
+                    overlayClassName="modal-overlay"
+                    ariaHideApp={false}
+                >
+                    <div className="modal-body">
+                        <p>{modalContent}</p>
+                        <button onClick={closeModal} className="btn-close">Aceptar</button>
+                    </div>
+                </ReactModal>
+            )}
         </div>
     );
 };
+
 export default NotificationRepresentanteMain;
