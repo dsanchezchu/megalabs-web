@@ -6,7 +6,7 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
 
     return (
         <div className="modal modal-open">
-            <div className="modal-box">
+            <div className="modal-box relative">
                 <h3 className="text-lg font-bold">{title}</h3>
                 <button
                     className="absolute top-2 right-2 btn btn-sm btn-circle btn-error"
@@ -15,6 +15,22 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                     <FaTimes />
                 </button>
                 <form onSubmit={onSubmit}>
+                    {/* Nombre del Cliente */}
+                    <div className="form-control mt-4">
+                        <label className="label">
+                            <span className="label-text">Nombre del Cliente</span>
+                        </label>
+                        <input
+                            type="text"
+                            className="input input-bordered"
+                            value={eventDetails.nombreCliente}
+                            onChange={(e) => setEventDetails({ ...eventDetails, nombreCliente: e.target.value })}
+                            required
+                            disabled={isReadOnly && mode === "edit"} // Editable solo si no es INASISTENCIA
+                        />
+                    </div>
+
+                    {/* Motivo */}
                     <div className="form-control mt-4">
                         <label className="label">
                             <span className="label-text">Motivo</span>
@@ -33,6 +49,8 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                             ))}
                         </select>
                     </div>
+
+                    {/* Hora */}
                     <div className="form-control mt-4">
                         <label className="label">
                             <span className="label-text">Hora</span>
@@ -50,6 +68,26 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                             required
                         />
                     </div>
+
+                    {/* Estado */}
+                    <div className="form-control mt-4">
+                        <label className="label">
+                            <span className="label-text">Estado</span>
+                        </label>
+                        <select
+                            className="select select-bordered"
+                            value={eventDetails.estado}
+                            onChange={(e) => setEventDetails({ ...eventDetails, estado: e.target.value })}
+                            disabled={isReadOnly && mode === "edit"} // Editable si no es INASISTENCIA
+                            required
+                        >
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="ASISTENCIA">Asistencia</option>
+                            <option value="INASISTENCIA">Inasistencia</option>
+                        </select>
+                    </div>
+
+                    {/* Botones */}
                     <div className="modal-action">
                         <button className="btn btn-primary" type="submit">
                             Guardar

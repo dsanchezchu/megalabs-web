@@ -76,14 +76,17 @@ const Calendar = () => {
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
+
         const updatedEventData = {
+            nombreCliente: editEvent.nombreCliente, // Ahora incluye el nombre del cliente
             motivo: editEvent.motivo,
             fechaHora: editEvent.fechaHora,
-            estado: editEvent.estado,
+            estado: editEvent.estado, // Incluye el estado
         };
 
         try {
             const updatedEvent = await actualizarCita(editEvent.id, updatedEventData);
+
             setEvents(
                 events.map((event) =>
                     event.id === updatedEvent.id
@@ -91,11 +94,14 @@ const Calendar = () => {
                         : event
                 )
             );
+
             setShowEditModal(false);
         } catch (error) {
-            alert("Error al guardar los cambios.");
+            console.error("Error al guardar los cambios:", error);
+            alert("Hubo un error al guardar los cambios.");
         }
     };
+
 
     return (
         <div className="p-4 bg-base-200 rounded-lg">

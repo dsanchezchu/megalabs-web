@@ -76,7 +76,10 @@ export const obtenerCitasPorRepresentante = async (dniRepresentante) => {
                 },
             }
         );
-        return response.data; // Devuelve un array de CitaDTO
+        return response.data.map((cita) => ({
+            ...cita,
+            nombreCliente: cita.nombreCliente || "Nombre no disponible", // Asegurar nombre no vacío
+        }));
     } catch (error) {
         console.error('Error al obtener las citas del representante:', error);
         throw error;
