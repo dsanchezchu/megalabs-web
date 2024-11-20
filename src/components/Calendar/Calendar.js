@@ -79,6 +79,16 @@ const Calendar = () => {
         }
     };
 
+  const handleEditEvent = (event) => {
+    const updatedEvent = {
+        ...event,
+        nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback antes de editar
+    };
+    setEditEvent(updatedEvent);
+    setShowEditModal(true);
+};
+
+
     const handleEditSubmit = async (e) => {
         e.preventDefault();
 
