@@ -45,20 +45,23 @@ export const cancelarCita = async (id) => {
 };
 
 // Función para actualizar una cita
+// Función para actualizar una cita
 export const actualizarCita = async (id, citaData) => {
-    const response = await fetch(`/api/citas/${id}/actualizar`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(citaData), // Asegurar que los datos se envían como JSON
-    });
-
-    if (!response.ok) {
-        throw new Error("Error al actualizar la cita");
+    try {
+        const response = await axios.put(
+            `${API_BASE_URL}/citas/${id}/actualizar`,
+            citaData, // Enviar los datos de la cita como cuerpo
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response.data; // Devolver la cita actualizada
+    } catch (error) {
+        console.error('Error al actualizar la cita:', error.response || error.message);
+        throw error;
     }
-
-    return response.json(); // Devolver la cita actualizada
 };
 
 
