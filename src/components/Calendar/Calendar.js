@@ -30,19 +30,24 @@ const Calendar = () => {
     }, []);
 
     useEffect(() => {
-        const fetchEvents = async () => {
-            if (dniRepresentante) {
+    const fetchEvents = async () => {
+        if (dniRepresentante) {
+            try {
                 const fetchedEvents = await obtenerCitasPorRepresentante(dniRepresentante);
-                setEvents(
-                    fetchedEvents.map((event) => ({
-                        ...event,
-                        colorClass: getColorClass(event.estado),
-                    }))
-                );
+                const updatedEvents = fetchedEvents.map((event) => ({
+                    ...event,
+                    nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback en frontend
+                    colorClass: getColorClass(event.estado),
+                }));
+                setEvents(updatedEvents);
+            } catch (error) {
+                console.error("Error al cargar las citas:", error);
             }
-        };
-        fetchEvents();
-    }, [dniRepresentante]);
+        }
+    };
+    fetchEvents();
+}, [dniRepresentante]);
+
 
     const navigateMonth = (direction) => {
         setCurrentDate((prevDate) => new Date(prevDate.setMonth(prevDate.getMonth() + direction)));
