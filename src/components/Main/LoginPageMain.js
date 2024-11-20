@@ -37,6 +37,7 @@ const LoginPageMain = () => {
             // Opcional: Guardar otros detalles en localStorage si los necesitas
             localStorage.setItem('nombre', nombre);
             localStorage.setItem('role', role);
+            localStorage.setItem('dni', dni);
 
             // Redirigir al dashboard o página deseada
             navigate('/dashboard');
