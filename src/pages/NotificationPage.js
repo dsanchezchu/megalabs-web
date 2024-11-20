@@ -1,7 +1,7 @@
 import React from 'react';
-import NotificationPageMain from "../components/Main/NotificationPageMain";
+import NotificationPageMain from '../components/Main/NotificationPageMain';
 
-const OrdersPage = () => {
+const NotificationPage = () => {
     return (
         <div>
             <NotificationPageMain />
@@ -9,4 +9,4 @@ const OrdersPage = () => {
     );
 };
 
-export default OrdersPage;
+export default NotificationPage;
