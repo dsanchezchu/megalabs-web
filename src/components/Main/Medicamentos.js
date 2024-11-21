@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const Medicamentos = () => {
@@ -9,7 +10,6 @@ const Medicamentos = () => {
     });
     const [mensaje, setMensaje] = useState("");
 
-    // Obtener medicamentos en stock
     const obtenerMedicamentosEnStock = async () => {
         try {
             const response = await axios.get("/medicamentos/stock", {
@@ -21,7 +21,6 @@ const Medicamentos = () => {
         }
     };
 
-    // Generar reporte
     const generarReporte = async () => {
         try {
             const response = await axios.get("/medicamentos/reporte", {
@@ -40,7 +39,6 @@ const Medicamentos = () => {
         }
     };
 
-    // Crear medicamento
     const crearMedicamento = async (event) => {
         event.preventDefault();
         try {
