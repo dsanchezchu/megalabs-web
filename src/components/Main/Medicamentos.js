@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { useEffect } from "react";
 
 const Medicamentos = () => {
     const [medicamentos, setMedicamentos] = useState([]);
