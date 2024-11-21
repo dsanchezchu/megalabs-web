@@ -1,0 +1,90 @@
+.medicamentos-container {
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.titulo {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.cuadro {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitulo {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #555;
+}
+
+.lista-medicamentos {
+    list-style: none;
+    padding: 0;
+}
+
+.medicamento-item {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.medicamento-nombre {
+    font-weight: bold;
+}
+
+.medicamento-stock {
+    color: #555;
+}
+
+.boton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.boton:hover {
+    background-color: #45a049;
+}
+
+.campo-formulario {
+    margin-bottom: 15px;
+}
+
+.campo-formulario label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.campo-formulario input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.mensaje {
+    margin-top: 15px;
+    color: #28a745;
+    font-weight: bold;
+}

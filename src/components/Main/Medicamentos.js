@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { useEffect } from "react";
+import './Medicamentos.css';
 
 const Medicamentos = () => {
     const [medicamentos, setMedicamentos] = useState([]);
@@ -55,7 +55,7 @@ const Medicamentos = () => {
             );
             setMensaje("Medicamento creado exitosamente.");
             setNuevoMedicamento({ nombre: "", stock: 0 });
-            obtenerMedicamentosEnStock(); // Actualizar lista
+            obtenerMedicamentosEnStock();
         } catch (error) {
             console.error("Error al crear medicamento:", error);
             setMensaje("Error al crear medicamento.");
@@ -67,31 +67,30 @@ const Medicamentos = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Gestión de Medicamentos</h1>
+        <div className="medicamentos-container">
+            <h1 className="titulo">Gestión de Medicamentos</h1>
 
-            {/* Mostrar medicamentos en stock */}
-            <section>
-                <h2>Medicamentos en Stock</h2>
-                <ul>
+            <section className="cuadro">
+                <h2 className="subtitulo">Medicamentos en Stock</h2>
+                <ul className="lista-medicamentos">
                     {medicamentos.map((med) => (
-                        <li key={med.id}>
-                            {med.nombre} - Stock: {med.stock}
+                        <li key={med.id} className="medicamento-item">
+                            <span className="medicamento-nombre">{med.nombre}</span> -
+                            <span className="medicamento-stock">Stock: {med.stock}</span>
                         </li>
                     ))}
                 </ul>
             </section>
 
-            {/* Botón para generar reporte */}
-            <section>
-                <button onClick={generarReporte}>Generar Reporte</button>
+            <section className="cuadro">
+                <h2 className="subtitulo">Generar Reporte</h2>
+                <button className="boton" onClick={generarReporte}>Generar Reporte</button>
             </section>
 
-            {/* Formulario para crear un nuevo medicamento */}
-            <section>
-                <h2>Crear Nuevo Medicamento</h2>
+            <section className="cuadro">
+                <h2 className="subtitulo">Crear Nuevo Medicamento</h2>
                 <form onSubmit={crearMedicamento}>
-                    <div>
+                    <div className="campo-formulario">
                         <label>Nombre:</label>
                         <input
                             type="text"
@@ -102,7 +101,7 @@ const Medicamentos = () => {
                             required
                         />
                     </div>
-                    <div>
+                    <div className="campo-formulario">
                         <label>Stock:</label>
                         <input
                             type="number"
@@ -113,9 +112,9 @@ const Medicamentos = () => {
                             required
                         />
                     </div>
-                    <button type="submit">Crear</button>
+                    <button className="boton" type="submit">Crear</button>
                 </form>
-                {mensaje && <p>{mensaje}</p>}
+                {mensaje && <p className="mensaje">{mensaje}</p>}
             </section>
         </div>
     );
