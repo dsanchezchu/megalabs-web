@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import './Medicamentos.css';
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const Medicamentos = () => {
     const [medicamentos, setMedicamentos] = useState([]);
@@ -13,7 +14,7 @@ const Medicamentos = () => {
 
     const obtenerMedicamentosEnStock = async () => {
         try {
-            const response = await axios.get("/medicamentos/stock", {
+            const response = await axios.get(`${API_BASE_URL}/medicamentos/stock`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setMedicamentos(response.data);
@@ -24,7 +25,7 @@ const Medicamentos = () => {
 
     const generarReporte = async () => {
         try {
-            const response = await axios.get("/medicamentos/reporte", {
+            const response = await axios.get(`${API_BASE_URL}/medicamentos/stock`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 responseType: "blob",
             });
@@ -44,7 +45,7 @@ const Medicamentos = () => {
         event.preventDefault();
         try {
             const response = await axios.post(
-                "/medicamentos/crear",
+                `${API_BASE_URL}/medicamentos/stock`,
                 nuevoMedicamento,
                 {
                     headers: {
