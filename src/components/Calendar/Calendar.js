@@ -30,23 +30,23 @@ const Calendar = () => {
     }, []);
 
     useEffect(() => {
-    const fetchEvents = async () => {
-        if (dniRepresentante) {
-            try {
-                const fetchedEvents = await obtenerCitasPorRepresentante(dniRepresentante);
-                const updatedEvents = fetchedEvents.map((event) => ({
-                    ...event,
-                    nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback en frontend
-                    colorClass: getColorClass(event.estado),
-                }));
-                setEvents(updatedEvents);
-            } catch (error) {
-                console.error("Error al cargar las citas:", error);
+        const fetchEvents = async () => {
+            if (dniRepresentante) {
+                try {
+                    const fetchedEvents = await obtenerCitasPorRepresentante(dniRepresentante);
+                    const updatedEvents = fetchedEvents.map((event) => ({
+                        ...event,
+                        nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback en frontend
+                        colorClass: getColorClass(event.estado),
+                    }));
+                    setEvents(updatedEvents);
+                } catch (error) {
+                    console.error("Error al cargar las citas:", error);
+                }
             }
-        }
-    };
-    fetchEvents();
-}, [dniRepresentante]);
+        };
+        fetchEvents();
+    }, [dniRepresentante]);
 
 
     const navigateMonth = (direction) => {
@@ -72,22 +72,19 @@ const Calendar = () => {
                 fechaCompleta,
                 dniRepresentante
             );
-            setEvents([...events, { ...newEventData, colorClass: getColorClass(newEventData.estado) }]);
+            // Verifica y establece un nombre predeterminado si no está disponible
+            const eventWithDefaults = {
+                ...newEventData,
+                nombreCliente: newEventData.nombreCliente || "Nombre no disponible",
+                colorClass: getColorClass(newEventData.estado),
+            };
+
+            setEvents([...events, eventWithDefaults]);
             setShowEventModal(false);
         } catch (error) {
             alert("Error al programar la cita.");
         }
     };
-
-  const handleEditEvent = (event) => {
-    const updatedEvent = {
-        ...event,
-        nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback antes de editar
-    };
-    setEditEvent(updatedEvent);
-    setShowEditModal(true);
-};
-
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
@@ -136,7 +133,10 @@ const Calendar = () => {
                 events={events}
                 onDateClick={handleDateClick}
                 onEditEvent={(event) => {
-                    setEditEvent(event);
+                    setEditEvent({
+                        ...event,
+                        nombreCliente: event.nombreCliente || "Nombre no disponible", // Fallback
+                    });
                     setShowEditModal(true);
                 }}
             />

@@ -1,0 +1,75 @@
+/* Asegura una visibilidad clara de los días del calendario */
+.rbc-calendar {
+    font-family: 'Inter', sans-serif; /* O cualquier fuente que uses */
+}
+
+.rbc-month-view {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.rbc-header {
+    background-color: #f9fafb; /* Fondo para los encabezados de los días */
+    color: #4b5563; /* Texto de los encabezados */
+    font-weight: 600;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.rbc-day-bg {
+    background-color: #ffffff;
+}
+
+.rbc-day-bg:hover {
+    background-color: #e0f2fe; /* Efecto hover para los días */
+}
+
+.rbc-today {
+    background-color: #d1fae5 !important; /* Destaca el día actual */
+    border-radius: 4px;
+}
+
+.rbc-off-range-bg {
+    background-color: #f3f4f6; /* Días fuera del rango del mes actual */
+}
+
+.rbc-event {
+    background-color: #34d399; /* Fondo de los eventos */
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 0.85rem;
+}
+
+.rbc-date-cell {
+    font-weight: 500;
+    padding: 6px;
+    text-align: center;
+    color: #111827;
+}
+
+.rbc-date-cell:hover {
+    color: #059669; /* Hover en números de los días */
+    font-weight: bold;
+}
+
+.rbc-toolbar button {
+    background-color: #10b981;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.rbc-toolbar button:hover {
+    background-color: #047857;
+}
+
+/* Ajusta la vista móvil */
+@media (max-width: 768px) {
+    .rbc-calendar {
+        font-size: 12px;
+    }
+}
