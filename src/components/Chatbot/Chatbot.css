@@ -1,0 +1,17 @@
+.formatted-response {
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.formatted-response p {
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.formatted-response strong {
+    color: #111827;
+}

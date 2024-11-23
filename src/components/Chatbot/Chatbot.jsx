@@ -20,6 +20,22 @@ const Chatbot = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const formatProductResponse = (data) => {
+        if (!Array.isArray(data)) return "No se encontraron fórmulas asociadas.";
+
+        return data.map((formula) => {
+            return `
+            <div class="formatted-response">
+                <p><strong>Nombre:</strong> ${formula.nombre}</p>
+                <p><strong>Beneficios:</strong> ${formula.beneficios}</p>
+                <p><strong>Ingredientes Clave:</strong> ${formula.ingredientesClave}</p>
+                <p><strong>Diferencias:</strong> ${formula.diferencias}</p>
+                <p><strong>Fecha de Desarrollo:</strong> ${new Date(formula.fechaDesarrollo).toLocaleDateString()}</p>
+            </div>
+        `;
+        }).join("");
+    };
+
     const addMessage = (text, isUser = false) => {
         setMessages((prevMessages) => [...prevMessages, { text, isUser }]);
     };
@@ -74,7 +90,10 @@ const Chatbot = () => {
             });
 
             const data = response.data;
-            addMessage(`Fórmulas encontradas para el producto ${productId}: ${JSON.stringify(data)}`, false);
+            // Formatear la respuesta
+            const formattedResponse = formatProductResponse(data);
+
+            addMessage(`Fórmulas encontradas para el producto ${productId}: ${formattedResponse}`, false);
         } catch (error) {
             console.error('Error:', error);
             addMessage('Error al consultar el producto.', false);
@@ -126,21 +145,23 @@ const Chatbot = () => {
                     {messages.map((message, index) => (
                         <div
                             key={index}
-                            className={`chat ${message.isUser ? 'chat-end' : 'chat-start'}`
-                            }
+                            className={`chat ${message.isUser ? 'chat-end' : 'chat-start'}`}
                         >
                             <div
                                 className={`chat-bubble ${
-                                    message.isUser
-                                        ? 'chat-bubble-primary'
-                                        : 'chat-bubble-secondary'
+                                    message.isUser ? 'chat-bubble-primary' : 'chat-bubble-secondary'
                                 }`}
                             >
-                                {message.text}
+                                {/* Verificar si el texto contiene HTML formateado */}
+                                {message.text.includes("<div") ? (
+                                    <div dangerouslySetInnerHTML={{__html: message.text}}/>
+                                ) : (
+                                    message.text
+                                )}
                             </div>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef}/>
                 </div>
                 <form onSubmit={handleSubmit} className="flex space-x-2">
                     <input

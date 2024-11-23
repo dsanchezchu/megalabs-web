@@ -1,7 +1,8 @@
 // src/layouts/DashboardLayout.js
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from '../Sidebar/DashboardPageSidebar'; // Asegúrate de que la ruta es correcta
+import Sidebar from '../Sidebar/DashboardPageSidebar';
+import Chatbot from "../Chatbot/Chatbot"; // Asegúrate de que la ruta es correcta
 
 const DashboardLayout = () => {
     return (
@@ -9,6 +10,7 @@ const DashboardLayout = () => {
             <Sidebar /> {/* El Sidebar siempre estará aquí en el Dashboard */}
             <div className="flex-grow p-6 bg-gray-100">
                 <Outlet /> {/* Aquí se renderizarán las páginas específicas del Dashboard */}
+                <Chatbot />
             </div>
         </div>
     );
