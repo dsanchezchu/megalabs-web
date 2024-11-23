@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
@@ -7,9 +7,11 @@ import getDay from "date-fns/getDay";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { FiSearch, FiCalendar, FiClock, FiUser } from "react-icons/fi";
 import esES from "date-fns/locale/es";
+import { obtenerCitasPorRepresentante } from "../../services/CalendarService";
+import  "./DashboardPageMain.css";
 
 const locales = {
-    "es": esES
+    es: esES,
 };
 
 const localizer = dateFnsLocalizer({
@@ -22,28 +24,28 @@ const localizer = dateFnsLocalizer({
 
 const AppointmentCard = ({ appointment, onComplete }) => (
     <div
-        className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow duration-200"
-        aria-label={`Cita con ${appointment.patientName}`}
+        className={`bg-gradient-to-r ${
+            appointment.motivo.includes("Chequeo")
+                ? "from-green-100 to-green-50"
+                : "from-lime-100 to-lime-50"
+        } p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200`}
+        aria-label={`Cita con ${appointment.nombreCliente}`}
     >
         <div className="flex justify-between items-start">
             <div>
-                <h3 className="font-semibold text-lg">{appointment.patientName}</h3>
-                <p className="text-gray-600">{appointment.title}</p>
-                <p className="text-gray-500 text-sm">{appointment.reason}</p>
+                <h3 className="font-semibold text-lg text-gray-700">
+                    {appointment.nombreCliente}
+                </h3>
+                <p className="text-sm text-gray-600">{appointment.motivo}</p>
             </div>
             <div className="text-right">
-                <p className="text-theme-color-primary">
+                <p className="text-sm text-green-700 font-semibold">
                     <FiClock className="inline-block mr-1" />
-                    {format(appointment.start, "h:mm a", { locale: esES })}
+                    {format(new Date(appointment.fechaHora), "h:mm a", { locale: esES })}
                 </p>
-                <p className="text-gray-500">{format(appointment.start, "d MMM yyyy", { locale: esES })}</p>
-                <button
-                    onClick={() => onComplete(appointment.id)}
-                    className="mt-2 text-sm bg-theme-color-primary text-white px-3 py-1 rounded-md hover:bg-theme-color-primary-dark transition-colors duration-200"
-                    aria-label={`Marcar cita con ${appointment.patientName} como completada`}
-                >
-                    Completar
-                </button>
+                <p className="text-sm text-gray-500">
+                    {format(new Date(appointment.fechaHora), "d MMM yyyy", { locale: esES })}
+                </p>
             </div>
         </div>
     </div>
@@ -51,76 +53,49 @@ const AppointmentCard = ({ appointment, onComplete }) => (
 
 const CalendarEvent = ({ event }) => (
     <div className="p-1">
-        <strong className="block text-sm">{event.patientName}</strong>
-        <span className="text-xs text-gray-600">{event.title}</span>
-        <span className="text-xs block text-gray-500">{format(event.start, "h:mm a", { locale: esES })}</span>
+        <strong className="block text-sm text-gray-800">{event.nombreCliente}</strong>
+        <span className="text-xs text-gray-600">{event.motivo}</span>
+        <span className="text-xs block text-gray-500">
+      {format(new Date(event.fechaHora), "h:mm a", { locale: esES })}
+    </span>
     </div>
 );
 
 const DashboardPageMain = () => {
-    const dummyAppointments = useMemo(
-        () => [
-            {
-                id: 1,
-                title: "Chequeo Regular",
-                patientName: "Juan Pérez",
-                start: new Date(2024, 0, 15, 10, 0),
-                end: new Date(2024, 0, 15, 11, 0),
-                reason: "Chequeo anual de salud",
-            },
-            {
-                id: 2,
-                title: "Limpieza Dental",
-                patientName: "María García",
-                start: new Date(2024, 0, 16, 14, 30),
-                end: new Date(2024, 0, 16, 15, 30),
-                reason: "Limpieza dental regular",
-            },
-            {
-                id: 3,
-                title: "Terapia Física",
-                patientName: "Miguel Rodríguez",
-                start: new Date(2024, 0, 17, 9, 0),
-                end: new Date(2024, 0, 17, 10, 0),
-                reason: "Tratamiento del dolor de espalda",
-            },
-        ],
-        []
-    );
-
-    const [appointments, setAppointments] = useState(dummyAppointments);
+    const [appointments, setAppointments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [view, setView] = useState("month");
     const [sortBy, setSortBy] = useState("date");
+    const [dniRepresentante, setDniRepresentante] = useState("");
 
-    const messages = {
-        month: "Mes",
-        week: "Semana",
-        day: "Día",
-        agenda: "Agenda",
-        date: "Fecha",
-        time: "Hora",
-        event: "Evento",
-        allDay: "Todo el día",
-        previous: "Anterior",
-        next: "Siguiente",
-        today: "Hoy",
-        noEventsInRange: "No hay eventos en este rango",
-        showMore: total => `+ Ver más (${total})`
-    };
+    useEffect(() => {
+        const dni = localStorage.getItem("dni") || "12345678";
+        setDniRepresentante(dni);
+
+        const fetchAppointments = async () => {
+            try {
+                const fetchedAppointments = await obtenerCitasPorRepresentante(dni);
+                setAppointments(fetchedAppointments);
+            } catch (error) {
+                console.error("Error al cargar las citas:", error);
+            }
+        };
+
+        fetchAppointments();
+    }, []);
 
     const handleSearch = useCallback(
         (e) => {
             const term = e.target.value.toLowerCase();
             setSearchTerm(term);
-            const filtered = dummyAppointments.filter(
+            const filtered = appointments.filter(
                 (apt) =>
-                    apt.patientName.toLowerCase().includes(term) ||
-                    apt.reason.toLowerCase().includes(term)
+                    apt.nombreCliente.toLowerCase().includes(term) ||
+                    apt.motivo.toLowerCase().includes(term)
             );
             setAppointments(filtered);
         },
-        [dummyAppointments]
+        [appointments]
     );
 
     const handleSort = useCallback(
@@ -128,9 +103,9 @@ const DashboardPageMain = () => {
             setSortBy(type);
             const sorted = [...appointments].sort((a, b) => {
                 if (type === "date") {
-                    return a.start - b.start;
+                    return new Date(a.fechaHora) - new Date(b.fechaHora);
                 } else {
-                    return a.patientName.localeCompare(b.patientName);
+                    return a.nombreCliente.localeCompare(b.nombreCliente);
                 }
             });
             setAppointments(sorted);
@@ -145,15 +120,25 @@ const DashboardPageMain = () => {
         [appointments]
     );
 
-    const viewLabels = {
+    const messages = {
         month: "Mes",
         week: "Semana",
-        day: "Día"
+        day: "Día",
+        agenda: "Agenda",
+        date: "Fecha",
+        time: "Hora",
+        event: "Evento",
+        allDay: "Todo el día",
+        previous: "Anterior",
+        next: "Siguiente",
+        today: "Hoy",
+        noEventsInRange: "No hay eventos en este rango",
+        showMore: (total) => `+ Ver más (${total})`,
     };
 
     return (
-        <div className="min-h-screen bg-theme-color-base p-4">
-            <header className="bg-theme-color-primary rounded-lg p-6 mb-6 shadow-lg">
+        <div className="min-h-screen bg-gray-100 p-6">
+            <header className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-6 mb-6 shadow-lg">
                 <h1 className="text-3xl font-bold text-white mb-4">Citas Pendientes</h1>
                 <nav className="flex space-x-4">
                     {["month", "week", "day"].map((viewOption) => (
@@ -161,13 +146,12 @@ const DashboardPageMain = () => {
                             key={viewOption}
                             className={`px-4 py-2 rounded-md ${
                                 view === viewOption
-                                    ? "bg-theme-color-primary-content text-theme-color-base"
-                                    : "bg-white text-theme-color-primary"
-                            } hover:bg-theme-color-primary-content transition-colors duration-200`}
+                                    ? "bg-green-200 text-green-800"
+                                    : "bg-white text-green-600"
+                            } hover:bg-green-300 transition-colors duration-200`}
                             onClick={() => setView(viewOption)}
-                            aria-label={`Cambiar a vista de ${viewLabels[viewOption]}`}
                         >
-                            Vista de {viewLabels[viewOption]}
+                            Vista de {viewOption}
                         </button>
                     ))}
                 </nav>
@@ -181,32 +165,32 @@ const DashboardPageMain = () => {
                             <input
                                 type="text"
                                 placeholder="Buscar citas..."
-                                className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-theme-color-primary"
+                                className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 value={searchTerm}
                                 onChange={handleSearch}
-                                aria-label="Buscar citas"
                             />
                         </div>
                         <div className="flex space-x-2">
-                            {[{type: "date", label: "Fecha"}, {type: "name", label: "Nombre"}].map(({type, label}) => (
-                                <button
-                                    key={type}
-                                    onClick={() => handleSort(type)}
-                                    className={`px-4 py-2 rounded-md ${
-                                        sortBy === type
-                                            ? "bg-theme-color-primary text-white"
-                                            : "bg-gray-100"
-                                    }`}
-                                    aria-label={`Ordenar por ${label}`}
-                                >
-                                    {type === "date" ? (
-                                        <FiCalendar className="inline-block mr-2" />
-                                    ) : (
-                                        <FiUser className="inline-block mr-2" />
-                                    )}
-                                    {label}
-                                </button>
-                            ))}
+                            {[{ type: "date", label: "Fecha" }, { type: "name", label: "Nombre" }].map(
+                                ({ type, label }) => (
+                                    <button
+                                        key={type}
+                                        onClick={() => handleSort(type)}
+                                        className={`px-4 py-2 rounded-md ${
+                                            sortBy === type
+                                                ? "bg-green-600 text-white"
+                                                : "bg-gray-100 text-gray-800"
+                                        } hover:bg-green-700 hover:text-white`}
+                                    >
+                                        {type === "date" ? (
+                                            <FiCalendar className="inline-block mr-2" />
+                                        ) : (
+                                            <FiUser className="inline-block mr-2" />
+                                        )}
+                                        {label}
+                                    </button>
+                                )
+                            )}
                         </div>
                     </div>
 
@@ -224,21 +208,20 @@ const DashboardPageMain = () => {
                 <div className="bg-white rounded-lg p-6 shadow-lg">
                     <Calendar
                         localizer={localizer}
-                        events={appointments}
+                        events={appointments.map((apt) => ({
+                            ...apt,
+                            start: new Date(apt.fechaHora),
+                            end: new Date(apt.fechaHora),
+                        }))}
                         startAccessor="start"
                         endAccessor="end"
                         style={{ height: 600 }}
                         view={view}
                         onView={(newView) => setView(newView)}
                         components={{
-                            event: CalendarEvent
+                            event: CalendarEvent,
                         }}
                         messages={messages}
-                        eventPropGetter={(event) => ({
-                            className: "bg-theme-color-primary text-white rounded-md p-1"
-                        })}
-                        tooltipAccessor={(event) => `${event.patientName} - ${event.reason}`}
-                        className="rounded-lg"
                     />
                 </div>
             </div>
