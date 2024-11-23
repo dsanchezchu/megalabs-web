@@ -76,12 +76,17 @@ export const obtenerCitasPorRepresentante = async (dniRepresentante) => {
                 },
             }
         );
+
+        console.log("Datos recibidos de la API:", response.data);
+
+        // Ajustar el mapeo para usar `clienteNombre`
         return response.data.map((cita) => ({
             ...cita,
-            nombreCliente: cita.nombreCliente || "Nombre no disponible", // Asegurar nombre no vacío
+            nombreCliente: cita.clienteNombre?.trim() || "Nombre no disponible", // Usar `clienteNombre`
         }));
     } catch (error) {
         console.error('Error al obtener las citas del representante:', error);
         throw error;
     }
 };
+
