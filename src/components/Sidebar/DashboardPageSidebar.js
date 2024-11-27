@@ -52,6 +52,7 @@ const DashboardPageSidebar = () => {
                     <AiOutlineMedicineBox />{/* Ícono de notificaciones */}
                     <span>Medicamentos</span>
                 </Link>
+
             </div>
         </aside>
     );
