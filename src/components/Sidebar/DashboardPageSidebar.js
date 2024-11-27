@@ -12,7 +12,7 @@ const DashboardPageSidebar = () => {
     if (!token) return null; // No mostrar el sidebar si el usuario no está autenticado
 
     return (
-        <aside className={`bg-gray-800 text-white h-screen ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+        <aside className={`bg-gray-800 text-white h-auto ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
             {/* Botón para colapsar/expandir */}
             <div className="flex justify-end p-4">
                 <button
