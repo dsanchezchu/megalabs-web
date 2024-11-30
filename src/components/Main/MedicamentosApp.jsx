@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 import "./MedicamentosApp.css";
-import { API_BASE_URL } from '../../config/apiConfig';
+import { API_BASE_URL } from "../../config/apiConfig";
 
 const MedicamentosApp = () => {
     const [medicamentos, setMedicamentos] = useState([]);
@@ -56,72 +56,70 @@ const MedicamentosApp = () => {
     };
 
     return (
-        <Router>
-            <div className="app-container">
-                <nav>
-                    <ul>
-                        <li><Link to="/">Lista de Medicamentos</Link></li>
-                        <li><Link to="/crear">Crear Medicamento</Link></li>
-                        <li><Link to="/reporte">Generar Reporte</Link></li>
-                    </ul>
-                </nav>
+        <div className="app-container">
+            <nav>
+                <ul>
+                    <li><Link to="/">Lista de Medicamentos</Link></li>
+                    <li><Link to="/crear">Crear Medicamento</Link></li>
+                    <li><Link to="/reporte">Generar Reporte</Link></li>
+                </ul>
+            </nav>
 
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            <div>
-                                <h1>Medicamentos en Stock</h1>
-                                <button onClick={cargarMedicamentos}>Actualizar Lista</button>
-                                <ul>
-                                    {medicamentos.map((med) => (
-                                        <li key={med.id}>
-                                            {med.nombre} - Cantidad: {med.cantidad}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        }
-                    />
-                    <Route
-                        path="/crear"
-                        element={
-                            <div>
-                                <h1>Crear Medicamento</h1>
-                                <form onSubmit={crearMedicamento}>
-                                    <input
-                                        type="text"
-                                        name="nombre"
-                                        value={nuevoMedicamento.nombre}
-                                        placeholder="Nombre del medicamento"
-                                        onChange={manejarCambio}
-                                        required
-                                    />
-                                    <input
-                                        type="number"
-                                        name="cantidad"
-                                        value={nuevoMedicamento.cantidad}
-                                        placeholder="Cantidad"
-                                        onChange={manejarCambio}
-                                        required
-                                    />
-                                    <button type="submit">Crear</button>
-                                </form>
-                            </div>
-                        }
-                    />
-                    <Route
-                        path="/reporte"
-                        element={
-                            <div>
-                                <h1>Generar Reporte</h1>
-                                <button onClick={generarReporte}>Descargar Reporte PDF</button>
-                            </div>
-                        }
-                    />
-                </Routes>
-            </div>
-        </Router>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <div>
+                            <h1>Medicamentos en Stock</h1>
+                            <button onClick={cargarMedicamentos}>Actualizar Lista</button>
+                            <ul>
+                                {medicamentos.map((med) => (
+                                    <li key={med.id}>
+                                        {med.nombre} - Cantidad: {med.cantidad}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    }
+                />
+                <Route
+                    path="/crear"
+                    element={
+                        <div>
+                            <h1>Crear Medicamento</h1>
+                            <form onSubmit={crearMedicamento}>
+                                <input
+                                    type="text"
+                                    name="nombre"
+                                    value={nuevoMedicamento.nombre}
+                                    placeholder="Nombre del medicamento"
+                                    onChange={manejarCambio}
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    name="cantidad"
+                                    value={nuevoMedicamento.cantidad}
+                                    placeholder="Cantidad"
+                                    onChange={manejarCambio}
+                                    required
+                                />
+                                <button type="submit">Crear</button>
+                            </form>
+                        </div>
+                    }
+                />
+                <Route
+                    path="/reporte"
+                    element={
+                        <div>
+                            <h1>Generar Reporte</h1>
+                            <button onClick={generarReporte}>Descargar Reporte PDF</button>
+                        </div>
+                    }
+                />
+            </Routes>
+        </div>
     );
 };
 
