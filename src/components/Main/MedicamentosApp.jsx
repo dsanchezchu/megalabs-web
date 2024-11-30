@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 import "./MedicamentosApp.css";
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const MedicamentosApp = () => {
     const [medicamentos, setMedicamentos] = useState([]);
@@ -10,7 +11,7 @@ const MedicamentosApp = () => {
     // Función para cargar medicamentos
     const cargarMedicamentos = () => {
         axios
-            .get("${API_BASE_URL}/medicamentos/stock", { headers: { Authorization: "Bearer <token>" } })
+            .get(`${API_BASE_URL}/medicamentos/stock`, { headers: { Authorization: "Bearer <token>" } })
             .then((response) => setMedicamentos(response.data))
             .catch((error) => console.error("Error al cargar medicamentos:", error));
     };
@@ -28,7 +29,7 @@ const MedicamentosApp = () => {
     const crearMedicamento = (e) => {
         e.preventDefault();
         axios
-            .post("${API_BASE_URL}/medicamentos/crear", nuevoMedicamento, {
+            .post(`${API_BASE_URL}/medicamentos/crear`, nuevoMedicamento, {
                 headers: { Authorization: "Bearer <token>" },
             })
             .then(() => {
@@ -42,7 +43,7 @@ const MedicamentosApp = () => {
     // Función para generar el reporte
     const generarReporte = () => {
         axios
-            .get("${API_BASE_URL}/medicamentos/reporte", {
+            .get(`${API_BASE_URL}/medicamentos/reporte`, {
                 headers: { Authorization: "Bearer <token>" },
                 responseType: "blob",
             })
@@ -62,9 +63,9 @@ const MedicamentosApp = () => {
             <div className="app-container">
                 <nav>
                     <ul>
-                        <li><Link to="${API_BASE_URL}/">Lista de Medicamentos</Link></li>
-                        <li><Link to="${API_BASE_URL}/crear">Crear Medicamento</Link></li>
-                        <li><Link to="${API_BASE_URL}/reporte">Generar Reporte</Link></li>
+                        <li><Link to="/">Lista de Medicamentos</Link></li>
+                        <li><Link to="/crear">Crear Medicamento</Link></li>
+                        <li><Link to="/reporte">Generar Reporte</Link></li>
                     </ul>
                 </nav>
 
@@ -86,7 +87,7 @@ const MedicamentosApp = () => {
                         }
                     />
                     <Route
-                        path="${API_BASE_URL}/crear"
+                        path="/crear"
                         element={
                             <div>
                                 <h1>Crear Medicamento</h1>
@@ -113,7 +114,7 @@ const MedicamentosApp = () => {
                         }
                     />
                     <Route
-                        path="${API_BASE_URL}/reporte"
+                        path="/reporte"
                         element={
                             <div>
                                 <h1>Generar Reporte</h1>
