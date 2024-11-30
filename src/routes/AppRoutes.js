@@ -11,6 +11,7 @@ import ReportPage from "../pages/ReportPage";
 import NotificationPage from "../pages/NotificationPage";
 import MedicalSamplesPage from "../pages/MedicalSamplesPage";
 import NotificationRepresentanteMain from "../components/Main/NotificationRepresentanteMain";
+import MedicamentosApp from "../components/Main/MedicamentosApp";
 
 function AppRoutes() {
     return (
@@ -27,6 +28,7 @@ function AppRoutes() {
                 <Route path="notification" element={<NotificationPage />} />
                 <Route path="medicalSample" element={<MedicalSamplesPage />} />
                 <Route path="notifications" element={<NotificationRepresentanteMain />} />
+                <Route path="medicamentos" element={<MedicamentosApp/>} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}
