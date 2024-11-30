@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 import "./MedicamentosApp.css";
 import { API_BASE_URL } from "../../config/apiConfig";
@@ -7,7 +6,9 @@ import { API_BASE_URL } from "../../config/apiConfig";
 const MedicamentosApp = () => {
     const [medicamentos, setMedicamentos] = useState([]);
     const [nuevoMedicamento, setNuevoMedicamento] = useState({ nombre: "", cantidad: 0 });
+    const [seccionActiva, setSeccionActiva] = useState("listar"); // "listar", "crear", "reporte"
 
+    // Cargar medicamentos en stock
     const cargarMedicamentos = () => {
         axios
             .get(`${API_BASE_URL}/medicamentos/stock`, { headers: { Authorization: "Bearer <token>" } })
@@ -19,11 +20,13 @@ const MedicamentosApp = () => {
         cargarMedicamentos();
     }, []);
 
+    // Manejar cambios en el formulario
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setNuevoMedicamento({ ...nuevoMedicamento, [name]: value });
     };
 
+    // Crear un nuevo medicamento
     const crearMedicamento = (e) => {
         e.preventDefault();
         axios
@@ -34,10 +37,12 @@ const MedicamentosApp = () => {
                 alert("Medicamento creado con éxito");
                 cargarMedicamentos();
                 setNuevoMedicamento({ nombre: "", cantidad: 0 });
+                setSeccionActiva("listar");
             })
             .catch((error) => console.error("Error al crear medicamento:", error));
     };
 
+    // Generar reporte PDF
     const generarReporte = () => {
         axios
             .get(`${API_BASE_URL}/medicamentos/reporte`, {
@@ -58,67 +63,75 @@ const MedicamentosApp = () => {
     return (
         <div className="app-container">
             <nav>
-                <ul>
-                    <li><Link to="/">Lista de Medicamentos</Link></li>
-                    <li><Link to="/crear">Crear Medicamento</Link></li>
-                    <li><Link to="/reporte">Generar Reporte</Link></li>
+                <ul className="menu">
+                    <li
+                        className={seccionActiva === "listar" ? "activo" : ""}
+                        onClick={() => setSeccionActiva("listar")}
+                    >
+                        Lista de Medicamentos
+                    </li>
+                    <li
+                        className={seccionActiva === "crear" ? "activo" : ""}
+                        onClick={() => setSeccionActiva("crear")}
+                    >
+                        Crear Medicamento
+                    </li>
+                    <li
+                        className={seccionActiva === "reporte" ? "activo" : ""}
+                        onClick={() => setSeccionActiva("reporte")}
+                    >
+                        Generar Reporte
+                    </li>
                 </ul>
             </nav>
 
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <div>
-                            <h1>Medicamentos en Stock</h1>
-                            <button onClick={cargarMedicamentos}>Actualizar Lista</button>
-                            <ul>
-                                {medicamentos.map((med) => (
-                                    <li key={med.id}>
-                                        {med.nombre} - Cantidad: {med.cantidad}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    }
-                />
-                <Route
-                    path="/crear"
-                    element={
-                        <div>
-                            <h1>Crear Medicamento</h1>
-                            <form onSubmit={crearMedicamento}>
-                                <input
-                                    type="text"
-                                    name="nombre"
-                                    value={nuevoMedicamento.nombre}
-                                    placeholder="Nombre del medicamento"
-                                    onChange={manejarCambio}
-                                    required
-                                />
-                                <input
-                                    type="number"
-                                    name="cantidad"
-                                    value={nuevoMedicamento.cantidad}
-                                    placeholder="Cantidad"
-                                    onChange={manejarCambio}
-                                    required
-                                />
-                                <button type="submit">Crear</button>
-                            </form>
-                        </div>
-                    }
-                />
-                <Route
-                    path="/reporte"
-                    element={
-                        <div>
-                            <h1>Generar Reporte</h1>
-                            <button onClick={generarReporte}>Descargar Reporte PDF</button>
-                        </div>
-                    }
-                />
-            </Routes>
+            <div className="contenido">
+                {seccionActiva === "listar" && (
+                    <div>
+                        <h1>Medicamentos en Stock</h1>
+                        <button onClick={cargarMedicamentos}>Actualizar Lista</button>
+                        <ul>
+                            {medicamentos.map((med) => (
+                                <li key={med.id}>
+                                    {med.nombre} - Cantidad: {med.cantidad}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {seccionActiva === "crear" && (
+                    <div>
+                        <h1>Crear Medicamento</h1>
+                        <form onSubmit={crearMedicamento}>
+                            <input
+                                type="text"
+                                name="nombre"
+                                value={nuevoMedicamento.nombre}
+                                placeholder="Nombre del medicamento"
+                                onChange={manejarCambio}
+                                required
+                            />
+                            <input
+                                type="number"
+                                name="cantidad"
+                                value={nuevoMedicamento.cantidad}
+                                placeholder="Cantidad"
+                                onChange={manejarCambio}
+                                required
+                            />
+                            <button type="submit">Crear</button>
+                        </form>
+                    </div>
+                )}
+
+                {seccionActiva === "reporte" && (
+                    <div>
+                        <h1>Generar Reporte</h1>
+                        <button onClick={generarReporte}>Descargar Reporte PDF</button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

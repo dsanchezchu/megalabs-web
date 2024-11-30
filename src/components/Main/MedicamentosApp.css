@@ -1,61 +1,133 @@
+/* General App Styles */
 .app-container {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 900px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-nav ul {
-    list-style-type: none;
-    display: flex;
-    gap: 20px;
+/* Navigation Menu */
+
+.menu {
+    list-style: none;
     padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-around;
 }
 
-nav ul li {
-    display: inline;
+.menu li {
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-nav ul li a {
-    text-decoration: none;
-    color: #007bff;
+.menu li:hover {
+    background-color: #004a99;
+    transform: scale(1.05);
 }
 
-nav ul li a:hover {
-    text-decoration: underline;
+.menu li.activo {
+    background-color: #004a99;
+    font-weight: bold;
+}
+
+/* Main Content */
+.contenido {
+    padding: 30px;
+    background: #ffffff;
+    border-top: 1px solid #ddd;
 }
 
 h1 {
+    font-size: 24px;
+    color: #343a40;
     margin-bottom: 20px;
+    text-align: center;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    margin: 5px 0;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 300px;
-}
-
-input, button {
-    padding: 10px;
-    font-size: 16px;
-}
-
+/* Buttons */
 button {
-    background-color: #4caf50;
-    color: white;
+    padding: 10px 20px;
+    background: #28a745;
+    color: #fff;
+    font-size: 16px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background: #218838;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(1);
+}
+
+/* Input Fields */
+input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #6c757d;
+    outline: none;
+    box-shadow: 0 0 5px rgba(108, 117, 125, 0.5);
+}
+
+/* List of Medicamentos */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    background: #f1f3f5;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul li:hover {
+    background: #e9ecef;
+}
+
+ul li span {
+    font-weight: bold;
+    color: #495057;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+    .menu {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    ul li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
