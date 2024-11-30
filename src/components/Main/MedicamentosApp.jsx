@@ -8,7 +8,6 @@ const MedicamentosApp = () => {
     const [medicamentos, setMedicamentos] = useState([]);
     const [nuevoMedicamento, setNuevoMedicamento] = useState({ nombre: "", cantidad: 0 });
 
-    // Función para cargar medicamentos
     const cargarMedicamentos = () => {
         axios
             .get(`${API_BASE_URL}/medicamentos/stock`, { headers: { Authorization: "Bearer <token>" } })
@@ -20,7 +19,6 @@ const MedicamentosApp = () => {
         cargarMedicamentos();
     }, []);
 
-    // Función para manejar la creación de medicamentos
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setNuevoMedicamento({ ...nuevoMedicamento, [name]: value });
@@ -40,7 +38,6 @@ const MedicamentosApp = () => {
             .catch((error) => console.error("Error al crear medicamento:", error));
     };
 
-    // Función para generar el reporte
     const generarReporte = () => {
         axios
             .get(`${API_BASE_URL}/medicamentos/reporte`, {
