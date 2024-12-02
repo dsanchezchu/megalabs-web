@@ -68,6 +68,11 @@ const DashboardPageSidebar = () => {
                         <MdOutlineMail className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Notificar Representantes</span>}
                     </Link>
+
+                    <Link to="/dashboard/estudiosclinicos" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <MdOutlineMail className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Estudios Clínicos</span>}
+                    </Link>
                 </nav>
             </div>
         </aside>
