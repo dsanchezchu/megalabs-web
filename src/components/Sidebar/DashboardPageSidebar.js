@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome, FaBell } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
-import { MdOutlineMail } from "react-icons/md";
+import {MdOutlineMail, MdScience} from "react-icons/md";
 import { FaBars } from "react-icons/fa";
 
 const DashboardPageSidebar = () => {
@@ -70,7 +70,7 @@ const DashboardPageSidebar = () => {
                     </Link>
 
                     <Link to="/dashboard/estudiosclinicos" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
-                        <MdOutlineMail className="text-xl" />
+                        <MdScience className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Estudios Clínicos</span>}
                     </Link>
                 </nav>
