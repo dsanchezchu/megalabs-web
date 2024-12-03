@@ -1,7 +1,19 @@
 import React from "react";
+import { Autocomplete, TextField } from '@mui/material';
 import { FaTimes } from "react-icons/fa";
 
-const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails, title, mode }) => {
+const EventModal = ({ 
+    onClose, 
+    onSubmit, 
+    motivos = [], // Valor por defecto
+    eventDetails, 
+    setEventDetails, 
+    title, 
+    mode,
+    clientes = [], // Valor por defecto para el array de clientes
+    selectedCliente = null, // Valor por defecto para el cliente seleccionado
+    onClienteChange 
+}) => {
     const isReadOnly = mode === "edit" && eventDetails.estado === "INASISTENCIA";
 
     return (
@@ -15,22 +27,33 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                     <FaTimes />
                 </button>
                 <form onSubmit={onSubmit}>
-                    {/* Nombre del Cliente */}
+                    {/* Autocompletado de Cliente */}
                     <div className="form-control mt-4">
                         <label className="label">
                             <span className="label-text">Nombre del Cliente</span>
                         </label>
-                        <input
-                            type="text"
-                            className="input input-bordered"
-                            value={eventDetails.nombreCliente || ""}
-                            onChange={(e) =>
-                                setEventDetails({
-                                    ...eventDetails,
-                                    nombreCliente: e.target.value,
-                                })}
-                            required
-                            disabled={isReadOnly && mode === "edit"} // Editable solo si no es INASISTENCIA
+                        <Autocomplete
+                            options={clientes}
+                            value={selectedCliente}
+                            onChange={(event, newValue) => {
+                                if (onClienteChange) onClienteChange(newValue);
+                            }}
+                            getOptionLabel={(option) => option?.label || ''}
+                            isOptionEqualToValue={(option, value) => 
+                                option?.value === value?.value
+                            }
+                            disabled={mode === "edit"}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    placeholder="Buscar cliente..."
+                                    fullWidth
+                                    required
+                                    size="small"
+                                />
+                            )}
+                            noOptionsText="No se encontraron clientes"
                         />
                     </div>
 
@@ -65,8 +88,7 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                             value={eventDetails.fechaHora.split("T")[1]?.substring(0, 5)}
                             onChange={(e) => {
                                 const fechaBase = eventDetails.fechaHora.split("T")[0];
-                                const nuevaHora = e.target.value;
-                                setEventDetails({ ...eventDetails, fechaHora: `${fechaBase}T${nuevaHora}:00` });
+                                setEventDetails({ ...eventDetails, fechaHora: `${fechaBase}T${e.target.value}:00` });
                             }}
                             disabled={isReadOnly}
                             required
