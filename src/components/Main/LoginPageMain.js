@@ -7,15 +7,27 @@ const LoginPageMain = () => {
     const [dni, setDni] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Si ya existe un token en localStorage, redirige automáticamente al dashboard
+        // Primero verificar si hay una sesión activa
         const token = localStorage.getItem('token');
         if (token) {
             navigate('/dashboard');
+            return; // Importante: salir temprano del useEffect
         }
-    }, [navigate]);
+
+        // Si no hay sesión activa, entonces verificar credenciales guardadas
+        const savedDni = localStorage.getItem('rememberedDni');
+        const savedPassword = localStorage.getItem('rememberedPassword');
+        
+        if (savedDni && savedPassword) {
+            setDni(savedDni);
+            setPassword(savedPassword);
+            setRememberMe(true);
+        }
+    }, [navigate]); // Importante: incluir navigate en las dependencias
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,6 +50,15 @@ const LoginPageMain = () => {
             localStorage.setItem('nombre', nombre);
             localStorage.setItem('role', role);
             localStorage.setItem('dni', dni);
+
+            // Guardar credenciales si "Recordarme" está activado
+            if (rememberMe) {
+                localStorage.setItem('rememberedDni', dni);
+                localStorage.setItem('rememberedPassword', password);
+            } else {
+                localStorage.removeItem('rememberedDni');
+                localStorage.removeItem('rememberedPassword');
+            }
 
             // Redirigir al dashboard o página deseada
             navigate('/dashboard');
@@ -102,10 +123,15 @@ const LoginPageMain = () => {
 
             <div className="flex items-center justify-between">
                 <label className="flex items-center cursor-pointer">
-                    <input type="checkbox" className="checkbox checkbox-primary"/>
+                    <input 
+                        type="checkbox" 
+                        className="checkbox checkbox-primary"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                    />
                     <span className="label-text ml-2 text-gray-700">Recordarme</span>
                 </label>
-                <Link to="/" className="text-sm text-primary hover:text-primary-focus hover:underline">
+                <Link to="/passwordrecovery" className="text-sm text-primary hover:text-primary-focus hover:underline">
                     ¿Olvidaste tu contraseña?
                 </Link>
             </div>

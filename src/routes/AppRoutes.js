@@ -12,6 +12,7 @@ import NotificationPage from "../pages/NotificationPage";
 import MedicalSamplesPage from "../pages/MedicalSamplesPage";
 import NotificationRepresentanteMain from "../components/Main/NotificationRepresentanteMain";
 import EstudiosClinicosPage from "../pages/EstudiosClinicosPage";
+import PasswordRecoveryPage from '../pages/PasswordRecoveryPage';
 
 function AppRoutes() {
     return (
@@ -19,6 +20,7 @@ function AppRoutes() {
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
             {/* Rutas protegidas del Dashboard */}
             <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
                 <Route path="" element={<DashboardPage />} />

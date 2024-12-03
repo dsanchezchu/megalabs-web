@@ -3,8 +3,11 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/DashboardPageSidebar'; // Asegúrate de que la ruta es correcta
 import './DashboardStyle.css'
+import { useInactivityTimeout } from '../../services/InactivityService';
 
 const DashboardLayout = () => {
+    useInactivityTimeout();
+    
     return (
         <div className="flex h-screen">
             <Sidebar /> {/* El Sidebar siempre estará aquí en el Dashboard */}
