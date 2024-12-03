@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/apiConfig';
+import { showSuccessAlert, showErrorAlert } from '../../services/AlertService';
 
 const LoginPageMain = () => {
     const [dni, setDni] = useState('');
@@ -60,14 +61,12 @@ const LoginPageMain = () => {
                 localStorage.removeItem('rememberedPassword');
             }
 
-            // Redirigir al dashboard o página deseada
+            await showSuccessAlert('¡Inicio de sesión exitoso!');
             navigate('/dashboard');
         } catch (error) {
-            // Mostrar mensaje de error en caso de credenciales incorrectas
-            setError(
-                error.response && error.response.data
-                    ? error.response.data
-                    : 'Error al iniciar sesión. Verifica tus credenciales.'
+            showErrorAlert(
+                error.response?.data?.message || 
+                'Error al iniciar sesión. Verifica tus credenciales.'
             );
         }
     };
