@@ -1,0 +1,9 @@
+/* Asegura que el scrollbar sea invisible pero funcione */
+.flex-auto::-webkit-scrollbar {
+    width: 0px; /* El ancho del scrollbar será 0 */
+    height: 0px; /* El alto del scrollbar será 0 */
+}
+
+.flex-auto {
+    scrollbar-width: none; /* Para Firefox */
+}

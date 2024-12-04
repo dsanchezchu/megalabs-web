@@ -10,17 +10,21 @@ const DayCell = ({ day, events, onDateClick, onEditEvent }) => {
             {day && (
                 <>
                     <div className="font-bold">{format(day, "d")}</div>
-                    <div className="mt-1 space-y-1">
+                    {/* Contenedor de citas con scroll */}
+                    <div className="mt-1 space-y-1 overflow-y-auto max-h-20">
                         {events.map((event) => (
                             <div
                                 key={event.id}
-                                className={`p-1 rounded-lg text-xs ${event.colorClass}`}
+                                className={`p-1 rounded-lg text-xs ${event.colorClass} truncate`}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     onEditEvent(event);
                                 }}
+                                title={`${event.motivo} - ${event.nombreCliente || "Nombre no disponible"}`}
                             >
-                                {event.motivo}
+                                <strong>{event.motivo}</strong>
+                                <br />
+                                - {event.nombreCliente || "Nombre no disponible"}
                             </div>
                         ))}
                     </div>

@@ -23,8 +23,12 @@ const EventModal = ({ onClose, onSubmit, motivos, eventDetails, setEventDetails,
                         <input
                             type="text"
                             className="input input-bordered"
-                            value={eventDetails.nombreCliente}
-                            onChange={(e) => setEventDetails({ ...eventDetails, nombreCliente: e.target.value })}
+                            value={eventDetails.nombreCliente || ""}
+                            onChange={(e) =>
+                                setEventDetails({
+                                    ...eventDetails,
+                                    nombreCliente: e.target.value,
+                                })}
                             required
                             disabled={isReadOnly && mode === "edit"} // Editable solo si no es INASISTENCIA
                         />

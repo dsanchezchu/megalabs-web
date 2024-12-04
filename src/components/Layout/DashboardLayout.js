@@ -3,6 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/DashboardPageSidebar';
 import ChatbotButton from '../ChatbotButton/ChatbotButton';
+import './DashboardStyle.css'
 
 const DashboardLayout = () => {
     return (
