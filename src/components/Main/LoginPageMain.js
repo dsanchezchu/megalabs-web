@@ -2,33 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/apiConfig';
-import { showSuccessAlert, showErrorAlert } from '../../services/AlertService';
 
 const LoginPageMain = () => {
     const [dni, setDni] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Primero verificar si hay una sesión activa
+        // Si ya existe un token en localStorage, redirige automáticamente al dashboard
         const token = localStorage.getItem('token');
         if (token) {
             navigate('/dashboard');
-            return; // Importante: salir temprano del useEffect
         }
-
-        // Si no hay sesión activa, entonces verificar credenciales guardadas
-        const savedDni = localStorage.getItem('rememberedDni');
-        const savedPassword = localStorage.getItem('rememberedPassword');
-        
-        if (savedDni && savedPassword) {
-            setDni(savedDni);
-            setPassword(savedPassword);
-            setRememberMe(true);
-        }
-    }, [navigate]); // Importante: incluir navigate en las dependencias
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,21 +39,14 @@ const LoginPageMain = () => {
             localStorage.setItem('role', role);
             localStorage.setItem('dni', dni);
 
-            // Guardar credenciales si "Recordarme" está activado
-            if (rememberMe) {
-                localStorage.setItem('rememberedDni', dni);
-                localStorage.setItem('rememberedPassword', password);
-            } else {
-                localStorage.removeItem('rememberedDni');
-                localStorage.removeItem('rememberedPassword');
-            }
-
-            await showSuccessAlert('¡Inicio de sesión exitoso!');
+            // Redirigir al dashboard o página deseada
             navigate('/dashboard');
         } catch (error) {
-            showErrorAlert(
-                error.response?.data?.message || 
-                'Error al iniciar sesión. Verifica tus credenciales.'
+            // Mostrar mensaje de error en caso de credenciales incorrectas
+            setError(
+                error.response && error.response.data
+                    ? error.response.data
+                    : 'Error al iniciar sesión. Verifica tus credenciales.'
             );
         }
     };
@@ -122,15 +102,10 @@ const LoginPageMain = () => {
 
             <div className="flex items-center justify-between">
                 <label className="flex items-center cursor-pointer">
-                    <input 
-                        type="checkbox" 
-                        className="checkbox checkbox-primary"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                    />
+                    <input type="checkbox" className="checkbox checkbox-primary"/>
                     <span className="label-text ml-2 text-gray-700">Recordarme</span>
                 </label>
-                <Link to="/passwordrecovery" className="text-sm text-primary hover:text-primary-focus hover:underline">
+                <Link to="/" className="text-sm text-primary hover:text-primary-focus hover:underline">
                     ¿Olvidaste tu contraseña?
                 </Link>
             </div>

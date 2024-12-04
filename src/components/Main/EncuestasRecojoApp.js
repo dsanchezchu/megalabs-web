@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import "./EncuestasEntregaApp.css";
+import "./EncuestasRocojoApp.css";
 import { API_BASE_URL } from '../../config/apiConfig';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const EncuestasEntregaApp = () => {
+const EncuestasRecojoApp = () => {
     const [encuestas, setEncuestas] = useState([]);
     const [nuevaEncuesta, setNuevaEncuesta] = useState({
-        puntualidadEntrega: 0,
+        puntualidadRecojo: 0,
         estadoProducto: 0,
-        profesionalismoPersonal: 0,
-        facilidadContacto: 0,
+        amabilidadPersonal: 0,
+        claridadInstrucciones: 0,
         comentarios: "",
     });
     const [reporte, setReporte] = useState(null);
@@ -36,7 +36,7 @@ const EncuestasEntregaApp = () => {
         if (!token) return;
 
         axios
-            .get(`${API_BASE_URL}/api/encuestas-entrega`, { headers: { Authorization: `Bearer ${token}` } })
+            .get(`${API_BASE_URL}/api/encuestas-recojo`, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => setEncuestas(response.data))
             .catch((error) => console.error("Error al cargar encuestas:", error));
     };
@@ -54,10 +54,10 @@ const EncuestasEntregaApp = () => {
     };
 
     const validarFormulario = () => {
-        const { puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto } = nuevaEncuesta;
+        const { puntualidadRecojo, estadoProducto, amabilidadPersonal, claridadInstrucciones } = nuevaEncuesta;
         // Verifica que los valores estén entre 0 y 5, y que sean múltiplos de 1
         if (
-            [puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto].some(
+            [puntualidadRecojo, estadoProducto, amabilidadPersonal, claridadInstrucciones].some(
                 (v) => v < 0 || v > 5 || v % 1 !== 0
             )
         ) {
@@ -76,17 +76,17 @@ const EncuestasEntregaApp = () => {
         if (!token) return;
 
         axios
-            .post(`${API_BASE_URL}/api/encuestas-entrega`, nuevaEncuesta, {
+            .post(`${API_BASE_URL}/api/encuestas-recojo`, nuevaEncuesta, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then(() => {
                 alert("Encuesta creada con éxito");
                 cargarEncuestas();
                 setNuevaEncuesta({
-                    puntualidadEntrega: 0,
+                    puntualidadRecojo: 0,
                     estadoProducto: 0,
-                    profesionalismoPersonal: 0,
-                    facilidadContacto: 0,
+                    amabilidadPersonal: 0,
+                    claridadInstrucciones: 0,
                     comentarios: "",
                 });
             })
@@ -98,7 +98,7 @@ const EncuestasEntregaApp = () => {
         if (!token) return;
 
         axios
-            .get(`${API_BASE_URL}/api/encuestas-entrega/reporte`, { headers: { Authorization: `Bearer ${token}` } })
+            .get(`${API_BASE_URL}/api/encuestas-recojo/reporte`, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => setReporte(response.data))
             .catch((error) => console.error("Error al generar reporte:", error));
     };
@@ -120,7 +120,7 @@ const EncuestasEntregaApp = () => {
         responsive: true,
         plugins: {
             legend: { position: "top" },
-            title: { display: true, text: "Reporte de Promedios de Encuestas" },
+            title: { display: true, text: "Reporte de Promedios de Encuestas de Recojo" },
         },
         scales: {
             y: { beginAtZero: true, max: 5 },
@@ -129,7 +129,7 @@ const EncuestasEntregaApp = () => {
 
     return (
         <div className="encuestas-app">
-            <h1>Encuestas de Entrega</h1>
+            <h1>Encuestas de Recojo</h1>
 
             {error && <p className="error-message">{error}</p>}
 
@@ -138,11 +138,11 @@ const EncuestasEntregaApp = () => {
                 <div className="form-container">
                     <form onSubmit={crearEncuesta}>
                         <label>
-                            Puntualidad de Entrega:
+                            Puntualidad de Recojo:
                             <input
                                 type="number"
-                                name="puntualidadEntrega"
-                                value={nuevaEncuesta.puntualidadEntrega}
+                                name="puntualidadRecojo"
+                                value={nuevaEncuesta.puntualidadRecojo}
                                 min="0"
                                 max="5"
                                 step="1"
@@ -164,11 +164,11 @@ const EncuestasEntregaApp = () => {
                             />
                         </label>
                         <label>
-                            Profesionalismo del Personal:
+                            Amabilidad del Personal:
                             <input
                                 type="number"
-                                name="profesionalismoPersonal"
-                                value={nuevaEncuesta.profesionalismoPersonal}
+                                name="amabilidadPersonal"
+                                value={nuevaEncuesta.amabilidadPersonal}
                                 min="0"
                                 max="5"
                                 step="1"
@@ -177,11 +177,11 @@ const EncuestasEntregaApp = () => {
                             />
                         </label>
                         <label>
-                            Facilidad de Contacto:
+                            Claridad de Instrucciones:
                             <input
                                 type="number"
-                                name="facilidadContacto"
-                                value={nuevaEncuesta.facilidadContacto}
+                                name="claridadInstrucciones"
+                                value={nuevaEncuesta.claridadInstrucciones}
                                 min="0"
                                 max="5"
                                 step="1"
@@ -212,18 +212,18 @@ const EncuestasEntregaApp = () => {
                     <tr>
                         <th>Puntualidad</th>
                         <th>Estado</th>
-                        <th>Profesionalismo</th>
-                        <th>Facilidad</th>
+                        <th>Amabilidad</th>
+                        <th>Claridad</th>
                         <th>Comentarios</th>
                     </tr>
                     </thead>
                     <tbody>
                     {encuestas.map((encuesta, index) => (
                         <tr key={index}>
-                            <td>{encuesta.puntualidadEntrega}</td>
+                            <td>{encuesta.puntualidadRecojo}</td>
                             <td>{encuesta.estadoProducto}</td>
-                            <td>{encuesta.profesionalismoPersonal}</td>
-                            <td>{encuesta.facilidadContacto}</td>
+                            <td>{encuesta.amabilidadPersonal}</td>
+                            <td>{encuesta.claridadInstrucciones}</td>
                             <td>{encuesta.comentarios || "Sin comentarios"}</td>
                         </tr>
                     ))}
@@ -244,4 +244,4 @@ const EncuestasEntregaApp = () => {
     );
 };
 
-export default EncuestasEntregaApp;
+export default EncuestasRecojoApp;
