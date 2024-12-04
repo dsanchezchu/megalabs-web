@@ -78,7 +78,12 @@ const DashboardPageSidebar = () => {
 
                     <Link to="/dashboard/encuestasentrega" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                         <RiPagesLine className="text-xl" />
-                        {!isCollapsed && <span className="ml-3">Encuesta Entrega</span>}
+                        {!isCollapsed && <span className="ml-3">Encuestas Entrega</span>}
+                    </Link>
+
+                    <Link to="/dashboard/encuestasrecojo" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <RiPagesLine className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Encuestas Recojo</span>}
                     </Link>
                 </nav>
             </div>

@@ -13,6 +13,7 @@ import MedicalSamplesPage from "../pages/MedicalSamplesPage";
 import NotificationRepresentanteMain from "../components/Main/NotificationRepresentanteMain";
 import MedicamentosApp from "../components/Main/MedicamentosApp";
 import EncuestasEntregaApp from "../components/Main/EncuestasEntregaApp";
+import EncuestasRecojoApp from "../components/Main/EncuestasRecojoApp";
 
 function AppRoutes() {
     return (
@@ -31,6 +32,7 @@ function AppRoutes() {
                 <Route path="notifications" element={<NotificationRepresentanteMain />} />
                 <Route path="medicamentos" element={<MedicamentosApp/>} />
                 <Route path="encuestasentrega" element={<EncuestasEntregaApp/>} />
+                <Route path="encuestasrecojo" element={<EncuestasRecojoApp/>} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}
