@@ -14,6 +14,9 @@ import NotificationRepresentanteMain from "../components/Main/NotificationRepres
 import MedicamentosApp from "../components/Main/MedicamentosApp";
 import EncuestasEntregaApp from "../components/Main/EncuestasEntregaApp";
 import EncuestasRecojoApp from "../components/Main/EncuestasRecojoApp";
+import HistorialVisitasApp from "../components/Main/HistorialVisitasApp";
+import PasswordRecoveryPage from "../pages/PasswordRecoveryPage";
+import EstudiosClinicosPage from "../pages/EstudiosClinicosPage";
 
 function AppRoutes() {
     return (
@@ -21,6 +24,7 @@ function AppRoutes() {
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
             {/* Rutas protegidas del Dashboard */}
             <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
                 <Route path="" element={<DashboardPage />} />
@@ -33,6 +37,8 @@ function AppRoutes() {
                 <Route path="medicamentos" element={<MedicamentosApp/>} />
                 <Route path="encuestasentrega" element={<EncuestasEntregaApp/>} />
                 <Route path="encuestasrecojo" element={<EncuestasRecojoApp/>} />
+                <Route path="historialvisitas" element={<HistorialVisitasApp/>} />
+                <Route path="estudiosclinicos" element={<EstudiosClinicosPage />} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}
