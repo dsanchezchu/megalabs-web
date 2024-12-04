@@ -5,7 +5,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import "./EncuestasEntregaApp.css";
 import { API_BASE_URL } from '../../config/apiConfig';
 
-// Registrar componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const EncuestasEntregaApp = () => {
@@ -15,12 +14,10 @@ const EncuestasEntregaApp = () => {
         estadoProducto: 0,
         profesionalismoPersonal: 0,
         facilidadContacto: 0,
-        comentarios: "", // Nuevo campo
+        comentarios: "",
     });
     const [reporte, setReporte] = useState(null);
     const [error, setError] = useState("");
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-    const [searchQuery, setSearchQuery] = useState("");
 
     const obtenerToken = () => localStorage.getItem("token");
 
@@ -85,6 +82,7 @@ const EncuestasEntregaApp = () => {
                     estadoProducto: 0,
                     profesionalismoPersonal: 0,
                     facilidadContacto: 0,
+                    comentarios: "",
                 });
             })
             .catch((error) => console.error("Error al crear encuesta:", error));
@@ -100,33 +98,6 @@ const EncuestasEntregaApp = () => {
             .catch((error) => console.error("Error al generar reporte:", error));
     };
 
-    // Ordenar encuestas dinámicamente
-    const ordenarEncuestas = (key) => {
-        let direction = "asc";
-        if (sortConfig.key === key && sortConfig.direction === "asc") {
-            direction = "desc";
-        }
-        setSortConfig({ key, direction });
-        const sortedData = [...encuestas].sort((a, b) => {
-            if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-            if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
-            return 0;
-        });
-        setEncuestas(sortedData);
-    };
-
-    // Filtrar encuestas por la búsqueda
-    const encuestasFiltradas = encuestas.filter((encuesta) => {
-        const query = searchQuery.toLowerCase();
-        return (
-            encuesta.puntualidadEntrega.toString().includes(query) ||
-            encuesta.estadoProducto.toString().includes(query) ||
-            encuesta.profesionalismoPersonal.toString().includes(query) ||
-            encuesta.facilidadContacto.toString().includes(query)
-        );
-    });
-
-    // Configuración del gráfico
     const datosGrafico = {
         labels: reporte ? Object.keys(reporte) : [],
         datasets: [
@@ -159,82 +130,74 @@ const EncuestasEntregaApp = () => {
 
             <div className="form-section">
                 <h2>Registrar Nueva Encuesta</h2>
-                <form onSubmit={crearEncuesta}>
-                    <label>
-                        Puntualidad de Entrega:
-                        <input
-                            type="number"
-                            name="puntualidadEntrega"
-                            value={nuevaEncuesta.puntualidadEntrega}
-                            min="0"
-                            max="5"
-                            step="0.1"
-                            onChange={manejarCambio}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Estado del Producto:
-                        <input
-                            type="number"
-                            name="estadoProducto"
-                            value={nuevaEncuesta.estadoProducto}
-                            min="0"
-                            max="5"
-                            step="0.1"
-                            onChange={manejarCambio}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Profesionalismo del Personal:
-                        <input
-                            type="number"
-                            name="profesionalismoPersonal"
-                            value={nuevaEncuesta.profesionalismoPersonal}
-                            min="0"
-                            max="5"
-                            step="0.1"
-                            onChange={manejarCambio}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Facilidad de Contacto:
-                        <input
-                            type="number"
-                            name="facilidadContacto"
-                            value={nuevaEncuesta.facilidadContacto}
-                            min="0"
-                            max="5"
-                            step="0.1"
-                            onChange={manejarCambio}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Comentarios:
-                        <textarea
-                            name="comentarios"
-                            value={nuevaEncuesta.comentarios || ""}
-                            onChange={manejarCambio}
-                            placeholder="Escribe tus comentarios aquí..."
-                            rows="4"
-                            required
-                        />
-                    </label>
-                    <button type="submit">Registrar Encuesta</button>
-                </form>
-            </div>
-
-            <div className="search-section">
-                <h2>Buscar Encuestas</h2>
-                <input
-                    type="text"
-                    placeholder="Buscar por puntuaciones..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <div className="form-container">
+                    <form onSubmit={crearEncuesta}>
+                        <label>
+                            Puntualidad de Entrega:
+                            <input
+                                type="number"
+                                name="puntualidadEntrega"
+                                value={nuevaEncuesta.puntualidadEntrega}
+                                min="0"
+                                max="5"
+                                step="0.1"
+                                onChange={manejarCambio}
+                                required
+                            />
+                        </label>
+                        <label>
+                            Estado del Producto:
+                            <input
+                                type="number"
+                                name="estadoProducto"
+                                value={nuevaEncuesta.estadoProducto}
+                                min="0"
+                                max="5"
+                                step="0.1"
+                                onChange={manejarCambio}
+                                required
+                            />
+                        </label>
+                        <label>
+                            Profesionalismo del Personal:
+                            <input
+                                type="number"
+                                name="profesionalismoPersonal"
+                                value={nuevaEncuesta.profesionalismoPersonal}
+                                min="0"
+                                max="5"
+                                step="0.1"
+                                onChange={manejarCambio}
+                                required
+                            />
+                        </label>
+                        <label>
+                            Facilidad de Contacto:
+                            <input
+                                type="number"
+                                name="facilidadContacto"
+                                value={nuevaEncuesta.facilidadContacto}
+                                min="0"
+                                max="5"
+                                step="0.1"
+                                onChange={manejarCambio}
+                                required
+                            />
+                        </label>
+                        <label>
+                            Comentarios:
+                            <textarea
+                                name="comentarios"
+                                value={nuevaEncuesta.comentarios || ""}
+                                onChange={manejarCambio}
+                                placeholder="Escribe tus comentarios aquí..."
+                                rows="4"
+                                required
+                            />
+                        </label>
+                        <button type="submit">Registrar Encuesta</button>
+                    </form>
+                </div>
             </div>
 
             <div className="table-section">
@@ -242,22 +205,21 @@ const EncuestasEntregaApp = () => {
                 <table>
                     <thead>
                     <tr>
-                        <th onClick={() => ordenarEncuestas("puntualidadEntrega")}>Puntualidad</th>
-                        <th onClick={() => ordenarEncuestas("estadoProducto")}>Estado</th>
-                        <th onClick={() => ordenarEncuestas("profesionalismoPersonal")}>Profesionalismo</th>
-                        <th onClick={() => ordenarEncuestas("facilidadContacto")}>Facilidad</th>
-                        <th>Comentarios</th> {/* Nuevo encabezado */}
+                        <th>Puntualidad</th>
+                        <th>Estado</th>
+                        <th>Profesionalismo</th>
+                        <th>Facilidad</th>
+                        <th>Comentarios</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {encuestasFiltradas.map((encuesta, index) => (
+                    {encuestas.map((encuesta, index) => (
                         <tr key={index}>
                             <td>{encuesta.puntualidadEntrega}</td>
                             <td>{encuesta.estadoProducto}</td>
                             <td>{encuesta.profesionalismoPersonal}</td>
                             <td>{encuesta.facilidadContacto}</td>
                             <td>{encuesta.comentarios || "Sin comentarios"}</td>
-                            {/* Mostrar comentarios */}
                         </tr>
                     ))}
                     </tbody>
