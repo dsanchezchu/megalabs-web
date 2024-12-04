@@ -15,6 +15,7 @@ const EncuestasEntregaApp = () => {
         estadoProducto: 0,
         profesionalismoPersonal: 0,
         facilidadContacto: 0,
+        comentarios: "", // Nuevo campo
     });
     const [reporte, setReporte] = useState(null);
     const [error, setError] = useState("");
@@ -49,7 +50,10 @@ const EncuestasEntregaApp = () => {
 
     const manejarCambio = (e) => {
         const { name, value } = e.target;
-        setNuevaEncuesta({ ...nuevaEncuesta, [name]: parseFloat(value) });
+        setNuevaEncuesta({
+            ...nuevaEncuesta,
+            [name]: name === "comentarios" ? value : parseFloat(value),
+        });
     };
 
     const validarFormulario = () => {
@@ -208,6 +212,17 @@ const EncuestasEntregaApp = () => {
                             required
                         />
                     </label>
+                    <label>
+                        Comentarios:
+                        <textarea
+                            name="comentarios"
+                            value={nuevaEncuesta.comentarios || ""}
+                            onChange={manejarCambio}
+                            placeholder="Escribe tus comentarios aquí..."
+                            rows="4"
+                            required
+                        />
+                    </label>
                     <button type="submit">Registrar Encuesta</button>
                 </form>
             </div>
@@ -231,6 +246,7 @@ const EncuestasEntregaApp = () => {
                         <th onClick={() => ordenarEncuestas("estadoProducto")}>Estado</th>
                         <th onClick={() => ordenarEncuestas("profesionalismoPersonal")}>Profesionalismo</th>
                         <th onClick={() => ordenarEncuestas("facilidadContacto")}>Facilidad</th>
+                        <th>Comentarios</th> {/* Nuevo encabezado */}
                     </tr>
                     </thead>
                     <tbody>
@@ -240,6 +256,8 @@ const EncuestasEntregaApp = () => {
                             <td>{encuesta.estadoProducto}</td>
                             <td>{encuesta.profesionalismoPersonal}</td>
                             <td>{encuesta.facilidadContacto}</td>
+                            <td>{encuesta.comentarios || "Sin comentarios"}</td>
+                            {/* Mostrar comentarios */}
                         </tr>
                     ))}
                     </tbody>
@@ -251,7 +269,7 @@ const EncuestasEntregaApp = () => {
                 <button onClick={generarReporte}>Generar Reporte</button>
                 {reporte && (
                     <div>
-                        <Bar data={datosGrafico} options={opcionesGrafico} />
+                        <Bar data={datosGrafico} options={opcionesGrafico}/>
                     </div>
                 )}
             </div>
