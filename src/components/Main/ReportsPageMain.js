@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/apiConfig';
+import { showSuccessAlert, showErrorAlert } from '../../services/AlertService';
 
 const ReportsPageMain = () => {
     const [impact, setImpact] = useState('');
@@ -27,23 +28,22 @@ const ReportsPageMain = () => {
         };
 
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${API_BASE_URL}/reportes/compliance/crear`,
                 reportData,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Agrega el token en la cabecera
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     }
                 }
             );
-            setMessage('Reporte enviado correctamente');
-            setError('');
+            await showSuccessAlert('Reporte enviado correctamente');
             resetForm();
         } catch (error) {
-            setMessage('');
-            setError(
-                error.response?.data?.message || 'Error al enviar el reporte. Inténtalo nuevamente.'
+            showErrorAlert(
+                error.response?.data?.message || 
+                'Error al enviar el reporte. Inténtalo nuevamente.'
             );
         }
     };

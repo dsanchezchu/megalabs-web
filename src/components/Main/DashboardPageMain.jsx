@@ -22,6 +22,12 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
+const viewOptionsText = {
+    month: 'meses',
+    week: 'semanas',
+    day: 'día'
+};
+
 const AppointmentCard = ({ appointment, onComplete }) => (
     <div
         className={`bg-gradient-to-r ${
@@ -151,7 +157,7 @@ const DashboardPageMain = () => {
                             } hover:bg-green-300 transition-colors duration-200`}
                             onClick={() => setView(viewOption)}
                         >
-                            Vista de {viewOption}
+                            Vista de {viewOptionsText[viewOption]}
                         </button>
                     ))}
                 </nav>
