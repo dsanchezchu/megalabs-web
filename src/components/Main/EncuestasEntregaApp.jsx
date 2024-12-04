@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import "./EncuestasEntregaApp.css";
 import { API_BASE_URL } from '../../config/apiConfig';
+
+// Registrar componentes de Chart.js
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const EncuestasEntregaApp = () => {
     const [encuestas, setEncuestas] = useState([]);
@@ -14,10 +19,8 @@ const EncuestasEntregaApp = () => {
     const [reporte, setReporte] = useState(null);
     const [error, setError] = useState("");
 
-    // Obtener token desde localStorage
     const obtenerToken = () => localStorage.getItem("token");
 
-    // Validar token antes de realizar peticiones
     const validarToken = () => {
         const token = obtenerToken();
         if (!token) {
@@ -28,7 +31,6 @@ const EncuestasEntregaApp = () => {
         return token;
     };
 
-    // Función para cargar las encuestas
     const cargarEncuestas = () => {
         const token = validarToken();
         if (!token) return;
@@ -43,13 +45,11 @@ const EncuestasEntregaApp = () => {
         cargarEncuestas();
     }, []);
 
-    // Función para manejar cambios en el formulario
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setNuevaEncuesta({ ...nuevaEncuesta, [name]: parseFloat(value) });
     };
 
-    // Validar formulario antes de enviar
     const validarFormulario = () => {
         const { puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto } = nuevaEncuesta;
         if ([puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto].some((v) => v < 0 || v > 5)) {
@@ -60,7 +60,6 @@ const EncuestasEntregaApp = () => {
         return true;
     };
 
-    // Función para enviar una nueva encuesta
     const crearEncuesta = (e) => {
         e.preventDefault();
         if (!validarFormulario()) return;
@@ -85,7 +84,6 @@ const EncuestasEntregaApp = () => {
             .catch((error) => console.error("Error al crear encuesta:", error));
     };
 
-    // Función para obtener el reporte
     const generarReporte = () => {
         const token = validarToken();
         if (!token) return;
@@ -94,6 +92,49 @@ const EncuestasEntregaApp = () => {
             .get(`${API_BASE_URL}/api/encuestas-entrega/reporte`, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => setReporte(response.data))
             .catch((error) => console.error("Error al generar reporte:", error));
+    };
+
+    // Configuración del gráfico
+    const datosGrafico = {
+        labels: reporte ? Object.keys(reporte) : [],
+        datasets: [
+            {
+                label: "Promedio",
+                data: reporte ? Object.values(reporte) : [],
+                backgroundColor: [
+                    "rgba(255, 99, 132, 0.2)",  // Rojo claro
+                    "rgba(54, 162, 235, 0.2)",  // Azul claro
+                    "rgba(255, 206, 86, 0.2)",  // Amarillo claro
+                    "rgba(75, 192, 192, 0.2)",  // Verde claro
+                ],
+                borderColor: [
+                    "rgba(255, 99, 132, 1)",    // Rojo
+                    "rgba(54, 162, 235, 1)",    // Azul
+                    "rgba(255, 206, 86, 1)",    // Amarillo
+                    "rgba(75, 192, 192, 1)",    // Verde
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const opcionesGrafico = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: true,
+                text: "Reporte de Promedios de Encuestas",
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 5, // Ya que los valores están en una escala de 0 a 5
+            },
+        },
     };
 
     return (
@@ -179,13 +220,9 @@ const EncuestasEntregaApp = () => {
                 <h2>Reporte Promedios</h2>
                 <button onClick={generarReporte}>Generar Reporte</button>
                 {reporte && (
-                    <ul>
-                        {Object.entries(reporte).map(([key, value]) => (
-                            <li key={key}>
-                                <strong>{key}:</strong> {value.toFixed(2)}
-                            </li>
-                        ))}
-                    </ul>
+                    <div>
+                        <Bar data={datosGrafico} options={opcionesGrafico} />
+                    </div>
                 )}
             </div>
         </div>
