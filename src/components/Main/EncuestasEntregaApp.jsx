@@ -55,8 +55,13 @@ const EncuestasEntregaApp = () => {
 
     const validarFormulario = () => {
         const { puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto } = nuevaEncuesta;
-        if ([puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto].some((v) => v < 0 || v > 5)) {
-            setError("Todos los valores deben estar entre 0 y 5.");
+        // Verifica que los valores estén entre 0 y 5, y que sean múltiplos de 1
+        if (
+            [puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto].some(
+                (v) => v < 0 || v > 5 || v % 1 !== 0
+            )
+        ) {
+            setError("Todos los valores deben estar entre 0 y 5, y deben ser enteros.");
             return false;
         }
         setError("");
@@ -140,7 +145,7 @@ const EncuestasEntregaApp = () => {
                                 value={nuevaEncuesta.puntualidadEntrega}
                                 min="0"
                                 max="5"
-                                step="0.1"
+                                step="1"
                                 onChange={manejarCambio}
                                 required
                             />
@@ -153,7 +158,7 @@ const EncuestasEntregaApp = () => {
                                 value={nuevaEncuesta.estadoProducto}
                                 min="0"
                                 max="5"
-                                step="0.1"
+                                step="1"
                                 onChange={manejarCambio}
                                 required
                             />
@@ -166,7 +171,7 @@ const EncuestasEntregaApp = () => {
                                 value={nuevaEncuesta.profesionalismoPersonal}
                                 min="0"
                                 max="5"
-                                step="0.1"
+                                step="1"
                                 onChange={manejarCambio}
                                 required
                             />
@@ -179,7 +184,7 @@ const EncuestasEntregaApp = () => {
                                 value={nuevaEncuesta.facilidadContacto}
                                 min="0"
                                 max="5"
-                                step="0.1"
+                                step="1"
                                 onChange={manejarCambio}
                                 required
                             />
