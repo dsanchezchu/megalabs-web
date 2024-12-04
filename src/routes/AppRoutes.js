@@ -11,8 +11,10 @@ import ReportPage from "../pages/ReportPage";
 import NotificationPage from "../pages/NotificationPage";
 import MedicalSamplesPage from "../pages/MedicalSamplesPage";
 import NotificationRepresentanteMain from "../components/Main/NotificationRepresentanteMain";
-import EstudiosClinicosPage from "../pages/EstudiosClinicosPage";
-import PasswordRecoveryPage from '../pages/PasswordRecoveryPage';
+import MedicamentosApp from "../components/Main/MedicamentosApp";
+import EncuestasEntregaApp from "../components/Main/EncuestasEntregaApp";
+import EncuestasRecojoApp from "../components/Main/EncuestasRecojoApp";
+import HistorialVisitasApp from "../components/Main/HistorialVisitasApp";
 
 function AppRoutes() {
     return (
@@ -20,7 +22,6 @@ function AppRoutes() {
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
             {/* Rutas protegidas del Dashboard */}
             <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
                 <Route path="" element={<DashboardPage />} />
@@ -30,7 +31,10 @@ function AppRoutes() {
                 <Route path="notification" element={<NotificationPage />} />
                 <Route path="medicalSample" element={<MedicalSamplesPage />} />
                 <Route path="notifications" element={<NotificationRepresentanteMain />} />
-                <Route path="estudiosclinicos" element={<EstudiosClinicosPage />} />
+                <Route path="medicamentos" element={<MedicamentosApp/>} />
+                <Route path="encuestasentrega" element={<EncuestasEntregaApp/>} />
+                <Route path="encuestasrecojo" element={<EncuestasRecojoApp/>} />
+                <Route path="historialvisitas" element={<HistorialVisitasApp/>} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}

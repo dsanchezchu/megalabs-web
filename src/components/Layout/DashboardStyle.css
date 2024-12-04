@@ -2,8 +2,53 @@
 .flex-auto::-webkit-scrollbar {
     width: 0px; /* El ancho del scrollbar será 0 */
     height: 0px; /* El alto del scrollbar será 0 */
-}
-
-.flex-auto {
+  }
+  
+  .flex-auto {
     scrollbar-width: none; /* Para Firefox */
-}
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto; /* Activa el scroll si el contenido excede el área */
+    padding: 1rem;
+    scrollbar-width: thin; /* Scroll más delgado para Firefox */
+  }
+  
+  /* Agregar un pequeño estilo para el scrollbar del sidebar */
+  .sidebar::-webkit-scrollbar {
+    width: 6px; /* Ajusta el ancho del scrollbar */
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+  }
+  
+  .content-area {
+    height: calc(100vh - 48px); /* Ajusta el valor de 48px dependiendo del tamaño del encabezado o de cualquier otro componente */
+    overflow-y: auto;
+    scrollbar-width: thin; /* Para un scroll más delgado */
+    -ms-overflow-style: none;  /* Para ocultar el scroll en IE y Edge */
+  }
+  
+  /* Ocultar el scroll en la mayoría de los navegadores */
+  .content-area::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  
+  /* Puedes ajustar el tamaño del scrollbar o añadir otros estilos personalizados */
+  .content-area::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+  }
+  
