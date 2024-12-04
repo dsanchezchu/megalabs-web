@@ -4,8 +4,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaSpinner } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/apiConfig";
 
 const MedicalSampleForm = () => {
     const [formData, setFormData] = useState({
@@ -55,11 +53,7 @@ const MedicalSampleForm = () => {
                     sampleNumber: "",
                     receiverName: "",
                     deliveryDate: new Date(),
-                    expiryDate: "",
-                    batchNumber: "",
-                    quantity: 0,
-                    comments: "",
-                    productId: ""
+                    comments: ""
                 });
             } catch (error) {
                 toast.error("No se pudo enviar el formulario. Intenta nuevamente.");
@@ -75,83 +69,6 @@ const MedicalSampleForm = () => {
             ...prev,
             [name]: value
         }));
-    };
-
-    const validateExpiryDate = (expiryDate) => {
-        const today = new Date();
-        const expiry = new Date(expiryDate);
-        
-        // No permitir fechas de caducidad pasadas
-        if (expiry < today) {
-            return "La fecha de caducidad no puede ser anterior a hoy";
-        }
-        
-        // Alertar sobre muestras próximas a caducar (3 meses)
-        const threeMonthsFromNow = new Date();
-        threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-        
-        if (expiry <= threeMonthsFromNow) {
-            return "¡Advertencia! Esta muestra caducará en los próximos 3 meses";
-        }
-        
-        return null;
-    };
-
-    const ExpiryAlert = ({ message }) => {
-        return (
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-                <div className="flex items-center">
-                    <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    <span>{message}</span>
-                </div>
-            </div>
-        );
-    };
-
-    const updateInventory = async (productId, quantity) => {
-        try {
-            const response = await axios.put(`${API_BASE_URL}/inventory/update`, {
-                productId,
-                quantity,
-                action: 'ADD'
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.status === 200) {
-                toast.success("Inventario actualizado correctamente");
-            }
-        } catch (error) {
-            console.error("Error al actualizar el inventario:", error);
-            toast.error("Error al actualizar el inventario");
-            throw error;
-        }
-    };
-
-    const generateReport = async (startDate, endDate) => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/samples/report`, {
-                params: {
-                    startDate,
-                    endDate
-                },
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            return response.data;
-        } catch (error) {
-            console.error("Error al generar el informe:", error);
-            toast.error("Error al generar el informe de recepción");
-            throw error;
-        }
     };
 
     return (
