@@ -7,3 +7,15 @@
 .flex-auto {
     scrollbar-width: none; /* Para Firefox */
 }
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
