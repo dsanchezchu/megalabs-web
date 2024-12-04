@@ -12,11 +12,29 @@ const EncuestasEntregaApp = () => {
         facilidadContacto: 0,
     });
     const [reporte, setReporte] = useState(null);
+    const [error, setError] = useState("");
+
+    // Obtener token desde localStorage
+    const obtenerToken = () => localStorage.getItem("token");
+
+    // Validar token antes de realizar peticiones
+    const validarToken = () => {
+        const token = obtenerToken();
+        if (!token) {
+            setError("Error: Token no encontrado. Por favor, inicie sesión nuevamente.");
+            console.error("Token no encontrado.");
+            return false;
+        }
+        return token;
+    };
 
     // Función para cargar las encuestas
     const cargarEncuestas = () => {
+        const token = validarToken();
+        if (!token) return;
+
         axios
-            .get(`${API_BASE_URL}/api/encuestas-entrega`, { headers: { Authorization: "Bearer <token>" } })
+            .get(`${API_BASE_URL}/api/encuestas-entrega`, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => setEncuestas(response.data))
             .catch((error) => console.error("Error al cargar encuestas:", error));
     };
@@ -31,12 +49,28 @@ const EncuestasEntregaApp = () => {
         setNuevaEncuesta({ ...nuevaEncuesta, [name]: parseFloat(value) });
     };
 
+    // Validar formulario antes de enviar
+    const validarFormulario = () => {
+        const { puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto } = nuevaEncuesta;
+        if ([puntualidadEntrega, estadoProducto, profesionalismoPersonal, facilidadContacto].some((v) => v < 0 || v > 5)) {
+            setError("Todos los valores deben estar entre 0 y 5.");
+            return false;
+        }
+        setError("");
+        return true;
+    };
+
     // Función para enviar una nueva encuesta
     const crearEncuesta = (e) => {
         e.preventDefault();
+        if (!validarFormulario()) return;
+
+        const token = validarToken();
+        if (!token) return;
+
         axios
             .post(`${API_BASE_URL}/api/encuestas-entrega`, nuevaEncuesta, {
-                headers: { Authorization: "Bearer <token>" },
+                headers: { Authorization: `Bearer ${token}` },
             })
             .then(() => {
                 alert("Encuesta creada con éxito");
@@ -53,8 +87,11 @@ const EncuestasEntregaApp = () => {
 
     // Función para obtener el reporte
     const generarReporte = () => {
+        const token = validarToken();
+        if (!token) return;
+
         axios
-            .get(`${API_BASE_URL}/api/encuestas-entrega/reporte`, { headers: { Authorization: "Bearer <token>" } })
+            .get(`${API_BASE_URL}/api/encuestas-entrega/reporte`, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => setReporte(response.data))
             .catch((error) => console.error("Error al generar reporte:", error));
     };
@@ -62,6 +99,8 @@ const EncuestasEntregaApp = () => {
     return (
         <div className="encuestas-app">
             <h1>Encuestas de Entrega</h1>
+
+            {error && <p className="error-message">{error}</p>}
 
             <div className="form-section">
                 <h2>Registrar Nueva Encuesta</h2>
