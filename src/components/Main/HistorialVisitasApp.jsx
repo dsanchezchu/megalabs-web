@@ -46,7 +46,7 @@ const HistorialVisitasApp = () => {
 
     return (
         <div className="historial-visitas-app">
-            <h1>Historial de Visitas</h1>
+            <h1>Gestión de Historial de Visitas</h1> {/* Título actualizado */}
 
             {error && <p className="error-message">{error}</p>}
 
@@ -54,32 +54,32 @@ const HistorialVisitasApp = () => {
                 <h2>Listado de Historial</h2>
                 <table>
                     <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>Lugar</th>
-                        <th>Representante (DNI)</th>
-                        <th>Cliente (RUC)</th>
-                    </tr>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Lugar</th>
+                            <th>Representante (DNI)</th>
+                            <th>Cliente (RUC)</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {entrevistas.length > 0 ? (
-                        entrevistas.map((entrevista, index) => (
-                            <tr key={index}>
-                                <td>{entrevista.fecha}</td>
-                                <td>{entrevista.hora}</td>
-                                <td>{entrevista.lugarSede}</td>
-                                <td>{entrevista.dniRepresentante}</td>
-                                <td>{entrevista.rucCliente}</td>
+                        {entrevistas.length > 0 ? (
+                            entrevistas.map((entrevista, index) => (
+                                <tr key={index}>
+                                    <td>{entrevista.fecha}</td>
+                                    <td>{entrevista.hora}</td>
+                                    <td>{entrevista.lugarSede}</td>
+                                    <td>{entrevista.representanteDni}</td> {/* Corregido */}
+                                    <td>{entrevista.clienteRuc}</td> {/* Corregido */}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" style={{ textAlign: "center" }}>
+                                    No hay entrevistas disponibles.
+                                </td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="5" style={{ textAlign: "center" }}>
-                                No hay entrevistas disponibles.
-                            </td>
-                        </tr>
-                    )}
+                        )}
                     </tbody>
                 </table>
             </div>
