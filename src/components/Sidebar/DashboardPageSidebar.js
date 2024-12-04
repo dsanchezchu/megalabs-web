@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome, FaBell } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
-import { MdOutlineMail } from "react-icons/md";
+import { MdOutlineMail, MdScience } from "react-icons/md";
 import { FaBars } from "react-icons/fa";
 import { GiMedicines } from "react-icons/gi";
 import { RiPagesLine } from "react-icons/ri";
