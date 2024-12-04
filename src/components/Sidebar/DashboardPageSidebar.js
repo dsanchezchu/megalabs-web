@@ -79,6 +79,7 @@ const DashboardPageSidebar = () => {
                     <Link to="/dashboard/encuestasentrega" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                         <RiPagesLine className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Encuesta Entrega</span>}
+                    </Link>
                     <Link to="/dashboard/estudiosclinicos" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                         <MdScience className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Estudios Clínicos</span>}
