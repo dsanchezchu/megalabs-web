@@ -6,11 +6,33 @@ import { Send, RefreshCw } from 'lucide-react';
 import { API_BASE_URL } from "../../config/apiConfig";
 import styles from './Chatbot.css';
 
+const normalizeText = (text) => {
+    return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
 const Chatbot = () => {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState(() => {
+        // Recuperar mensajes guardados del localStorage al iniciar
+        const savedMessages = localStorage.getItem('chatMessages');
+        return savedMessages ? JSON.parse(savedMessages) : [];
+    });
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const [feedback, setFeedback] = useState({});
+    const [error, setError] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
+
+    // Guardar mensajes en localStorage cada vez que cambian
+    useEffect(() => {
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+    }, [messages]);
+
+    // Agregar función para limpiar el historial
+    const clearChat = () => {
+        setMessages([]);
+        localStorage.removeItem('chatMessages');
+    };
 
     // Efecto para desplazarse al último mensaje automáticamente
     useEffect(() => {
@@ -43,28 +65,62 @@ const Chatbot = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
 
         if (!input.trim()) {
-            addMessage('Por favor, escribe algo válido.', false);
+            setError('Por favor, escribe algo válido.');
             return;
         }
 
-        // Añadir mensaje del usuario
+        const normalizedInput = normalizeText(input);
         addMessage(input, true);
         setInput('');
         setIsLoading(true);
 
         try {
-            if (input.toLowerCase().includes('consultar producto')) {
+            if (normalizedInput.includes('consultar producto')) {
                 await handleProductQuery(input);
-            } else if (input.toLowerCase().includes('comparar fórmulas')) {
+            } else if (normalizedInput.includes('comparar formulas')) {
                 await handleFormulaComparison(input);
             } else {
-                handleLocalQueries(input);
+                // Primero intentamos con respuestas locales
+                const localResponse = getLocalResponse(normalizedInput);
+                if (localResponse) {
+                    addMessage(localResponse, false);
+                } else {
+                    // Si no hay respuesta local, consultamos a Hugging Face
+                    const response = await axios.post(
+                        'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium',
+                        {
+                            inputs: input,
+                            parameters: {
+                                max_length: 100,
+                                temperature: 0.7,
+                                top_p: 0.9,
+                                return_full_text: false
+                            }
+                        },
+                        {
+                            headers: {
+                                'Authorization': `Bearer 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`,
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    );
+
+                    let botResponse = response.data[0]?.generated_text || 'Lo siento, no pude entender tu mensaje.';
+                    
+                    // Asegurarse de que la respuesta sea en español
+                    if (!isSpanish(botResponse)) {
+                        botResponse = 'Lo siento, no pude entender tu mensaje. ¿Podrías reformularlo?';
+                    }
+                    
+                    addMessage(botResponse, false);
+                }
             }
         } catch (error) {
-            console.error('Error:', error);
-            addMessage('Ocurrió un error al procesar tu solicitud.', false);
+            setError(error.response?.data?.message || 'Error al procesar tu solicitud');
+            addMessage('Lo siento, ocurrió un error. Por favor, intenta de nuevo.', false);
         } finally {
             setIsLoading(false);
         }
@@ -153,10 +209,66 @@ const Chatbot = () => {
         };
     };
 
+    // Función auxiliar para verificar si el texto está en español
+    const isSpanish = (text) => {
+        const spanishPattern = /[áéíóúñ¿¡]/i;
+        const spanishWords = ['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'y', 'o', 'pero'];
+        
+        return spanishPattern.test(text) || 
+               spanishWords.some(word => text.toLowerCase().includes(word));
+    };
+
+    // Función para obtener respuestas locales
+    const getLocalResponse = (normalizedQuery) => {
+        const responses = {
+            'hola': '¡Hola! ¿En qué puedo ayudarte hoy?',
+            'gracias': '¡De nada! Estoy aquí para ayudarte.',
+            'adios': '¡Hasta luego! Que tengas un excelente día.',
+            'ayuda': 'Puedo ayudarte con:\n- Consultas de productos\n- Comparación de fórmulas\n- Responder preguntas generales',
+            'como estas': '¡Muy bien, gracias por preguntar! ¿En qué puedo ayudarte?'
+        };
+
+        for (const [key, value] of Object.entries(responses)) {
+            if (normalizedQuery.includes(key)) {
+                return value;
+            }
+        }
+        return null;
+    };
+
+    const handleFeedback = (messageId, isHelpful) => {
+        setFeedback(prev => ({
+            ...prev,
+            [messageId]: isHelpful
+        }));
+    };
+
+    const suggestions = [
+        "Consultar producto 123",
+        "Comparar fórmulas 456 y 789",
+        "Necesito ayuda"
+    ];
+
+    const simulateTyping = async (message) => {
+        setIsTyping(true);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        addMessage(message, false);
+        setIsTyping(false);
+    };
+
     return (
-        <div className="card w-full max-w-2xl mx-auto bg-base-100 shadow-xl">
+        <div className="card w-full max-w-2xl mx-auto">
             <div className="card-body">
-                <div className="space-y-4 h-96 overflow-y-auto mb-4">
+                <div className="flex justify-end mb-2">
+                    <button 
+                        onClick={clearChat}
+                        className="text-sm px-3 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100"
+                    >
+                        Limpiar chat
+                    </button>
+                </div>
+                
+                <div className="chat-container">
                     {messages.map((message, index) => (
                         <div
                             key={index}
@@ -167,28 +279,54 @@ const Chatbot = () => {
                                     message.isUser ? 'chat-bubble-primary' : 'chat-bubble-secondary'
                                 }`}
                             >
-                                {/* Verificar si el texto contiene HTML formateado */}
                                 {message.text.includes("<div") ? (
                                     <div dangerouslySetInnerHTML={{__html: message.text}}/>
                                 ) : (
                                     message.text
                                 )}
+                                {!message.isUser && (
+                                    <div className="feedback-buttons">
+                                        <button onClick={() => handleFeedback(index, true)}>👍</button>
+                                        <button onClick={() => handleFeedback(index, false)}>👎</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
+                    {isTyping && (
+                        <div className="chat chat-start">
+                            <div className="chat-bubble chat-bubble-secondary">
+                                <div className="typing-indicator">
+                                    <span className="dot"></span>
+                                    <span className="dot"></span>
+                                    <span className="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div ref={messagesEndRef}/>
                 </div>
-                <form onSubmit={handleSubmit} className="flex space-x-2">
+                
+                <div className="suggestions-container">
+                    {suggestions.map((suggestion, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setInput(suggestion)}
+                        >
+                            {suggestion}
+                        </button>
+                    ))}
+                </div>
+
+                <form onSubmit={handleSubmit} className="input-container">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Escribe tu mensaje..."
-                        className="input input-bordered flex-grow"
                     />
                     <button
                         type="submit"
-                        className="btn btn-primary"
                         disabled={isLoading}
                     >
                         {isLoading ? (

@@ -2,15 +2,15 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/DashboardPageSidebar';
-import Chatbot from "../Chatbot/Chatbot"; // Asegúrate de que la ruta es correcta
+import ChatbotButton from '../ChatbotButton/ChatbotButton';
 
 const DashboardLayout = () => {
     return (
         <div className="flex h-screen">
-            <Sidebar /> {/* El Sidebar siempre estará aquí en el Dashboard */}
+            <Sidebar />
             <div className="flex-grow p-6 bg-gray-100">
-                <Outlet /> {/* Aquí se renderizarán las páginas específicas del Dashboard */}
-                <Chatbot />
+                <Outlet />
+                <ChatbotButton />
             </div>
         </div>
     );

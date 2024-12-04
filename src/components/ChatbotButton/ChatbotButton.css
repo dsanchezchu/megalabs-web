@@ -1,0 +1,48 @@
+.chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
+}
+
+.toggle-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #00875A;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+    background: #006644;
+    transform: scale(1.05);
+}
+
+/* Modificación aquí para ajustar solo la posición */
+.chatbot-modal {
+    position: fixed;
+    bottom: 100px; /* Ajusta la distancia desde el fondo */
+    right: 20px;  /* Ajusta la distancia desde la derecha */
+    z-index: 99998;
+    overflow: hidden;
+}
+
+/* Mantener el tamaño del modal */
+.chatbot-content {
+    height: 100%;
+    width: 100%;
+}
+
+/* Responsividad: el tamaño del modal no se modifica, solo se ajusta la posición */
+@media (max-width: 480px) {
+    .chatbot-modal {
+        right: 10px; /* Ajuste para pantallas pequeñas */
+    }
+}
