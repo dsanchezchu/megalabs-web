@@ -128,3 +128,23 @@
         align-items: flex-start;
     }
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    cursor: pointer;
+    background-color: #f4f4f4;
+}
+
+th:hover {
+    background-color: #ddd;
+}

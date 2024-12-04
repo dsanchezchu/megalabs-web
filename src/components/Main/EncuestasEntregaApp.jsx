@@ -18,6 +18,8 @@ const EncuestasEntregaApp = () => {
     });
     const [reporte, setReporte] = useState(null);
     const [error, setError] = useState("");
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+    const [searchQuery, setSearchQuery] = useState("");
 
     const obtenerToken = () => localStorage.getItem("token");
 
@@ -94,6 +96,32 @@ const EncuestasEntregaApp = () => {
             .catch((error) => console.error("Error al generar reporte:", error));
     };
 
+    // Ordenar encuestas dinámicamente
+    const ordenarEncuestas = (key) => {
+        let direction = "asc";
+        if (sortConfig.key === key && sortConfig.direction === "asc") {
+            direction = "desc";
+        }
+        setSortConfig({ key, direction });
+        const sortedData = [...encuestas].sort((a, b) => {
+            if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+            if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+            return 0;
+        });
+        setEncuestas(sortedData);
+    };
+
+    // Filtrar encuestas por la búsqueda
+    const encuestasFiltradas = encuestas.filter((encuesta) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            encuesta.puntualidadEntrega.toString().includes(query) ||
+            encuesta.estadoProducto.toString().includes(query) ||
+            encuesta.profesionalismoPersonal.toString().includes(query) ||
+            encuesta.facilidadContacto.toString().includes(query)
+        );
+    });
+
     // Configuración del gráfico
     const datosGrafico = {
         labels: reporte ? Object.keys(reporte) : [],
@@ -101,18 +129,8 @@ const EncuestasEntregaApp = () => {
             {
                 label: "Promedio",
                 data: reporte ? Object.values(reporte) : [],
-                backgroundColor: [
-                    "rgba(255, 99, 132, 0.2)",  // Rojo claro
-                    "rgba(54, 162, 235, 0.2)",  // Azul claro
-                    "rgba(255, 206, 86, 0.2)",  // Amarillo claro
-                    "rgba(75, 192, 192, 0.2)",  // Verde claro
-                ],
-                borderColor: [
-                    "rgba(255, 99, 132, 1)",    // Rojo
-                    "rgba(54, 162, 235, 1)",    // Azul
-                    "rgba(255, 206, 86, 1)",    // Amarillo
-                    "rgba(75, 192, 192, 1)",    // Verde
-                ],
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+                borderColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
                 borderWidth: 1,
             },
         ],
@@ -121,19 +139,11 @@ const EncuestasEntregaApp = () => {
     const opcionesGrafico = {
         responsive: true,
         plugins: {
-            legend: {
-                position: "top",
-            },
-            title: {
-                display: true,
-                text: "Reporte de Promedios de Encuestas",
-            },
+            legend: { position: "top" },
+            title: { display: true, text: "Reporte de Promedios de Encuestas" },
         },
         scales: {
-            y: {
-                beginAtZero: true,
-                max: 5, // Ya que los valores están en una escala de 0 a 5
-            },
+            y: { beginAtZero: true, max: 5 },
         },
     };
 
@@ -202,18 +212,38 @@ const EncuestasEntregaApp = () => {
                 </form>
             </div>
 
-            <div className="list-section">
+            <div className="search-section">
+                <h2>Buscar Encuestas</h2>
+                <input
+                    type="text"
+                    placeholder="Buscar por puntuaciones..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+
+            <div className="table-section">
                 <h2>Listado de Encuestas</h2>
-                <ul>
-                    {encuestas.map((encuesta, index) => (
-                        <li key={index}>
-                            <strong>Puntualidad:</strong> {encuesta.puntualidadEntrega} |{" "}
-                            <strong>Estado:</strong> {encuesta.estadoProducto} |{" "}
-                            <strong>Profesionalismo:</strong> {encuesta.profesionalismoPersonal} |{" "}
-                            <strong>Facilidad:</strong> {encuesta.facilidadContacto}
-                        </li>
+                <table>
+                    <thead>
+                    <tr>
+                        <th onClick={() => ordenarEncuestas("puntualidadEntrega")}>Puntualidad</th>
+                        <th onClick={() => ordenarEncuestas("estadoProducto")}>Estado</th>
+                        <th onClick={() => ordenarEncuestas("profesionalismoPersonal")}>Profesionalismo</th>
+                        <th onClick={() => ordenarEncuestas("facilidadContacto")}>Facilidad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {encuestasFiltradas.map((encuesta, index) => (
+                        <tr key={index}>
+                            <td>{encuesta.puntualidadEntrega}</td>
+                            <td>{encuesta.estadoProducto}</td>
+                            <td>{encuesta.profesionalismoPersonal}</td>
+                            <td>{encuesta.facilidadContacto}</td>
+                        </tr>
                     ))}
-                </ul>
+                    </tbody>
+                </table>
             </div>
 
             <div className="report-section">
