@@ -4,6 +4,8 @@ import { FaCalendarAlt, FaClipboardList, FaFileAlt, FaHome, FaBell } from "react
 import { FaFilePen } from "react-icons/fa6";
 import { MdOutlineMail } from "react-icons/md";
 import { FaBars } from "react-icons/fa";
+import { GiMedicines } from "react-icons/gi";
+import { RiPagesLine } from "react-icons/ri";
 
 const DashboardPageSidebar = () => {
     const token = localStorage.getItem('token');
@@ -12,7 +14,7 @@ const DashboardPageSidebar = () => {
     if (!token) return null; // No mostrar el sidebar si el usuario no está autenticado
 
     return (
-        <aside className={`bg-gray-800 text-white h-screen ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+        <aside className={`bg-gray-800 text-white h-auto ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
             {/* Botón para colapsar/expandir */}
             <div className="flex justify-end p-4">
                 <button
@@ -67,6 +69,21 @@ const DashboardPageSidebar = () => {
                     <Link to="/dashboard/notifications" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                         <MdOutlineMail className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Notificar Representantes</span>}
+                    </Link>
+
+                    <Link to="/dashboard/medicamentos" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <GiMedicines className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Medicamentos</span>}
+                    </Link>
+
+                    <Link to="/dashboard/encuestasentrega" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <RiPagesLine className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Encuestas Entrega</span>}
+                    </Link>
+
+                    <Link to="/dashboard/encuestasrecojo" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <RiPagesLine className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Encuestas Recojo</span>}
                     </Link>
                 </nav>
             </div>
