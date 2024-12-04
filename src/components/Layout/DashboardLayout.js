@@ -3,8 +3,12 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/DashboardPageSidebar';
 import ChatbotButton from '../ChatbotButton/ChatbotButton';
 import './DashboardStyle.css';
+import {useInactivityTimeout} from "../../services/InactivityService";
 
 const DashboardLayout = () => {
+
+    useInactivityTimeout();
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
