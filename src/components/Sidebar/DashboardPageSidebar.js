@@ -6,6 +6,7 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaBars } from "react-icons/fa";
 import { GiMedicines } from "react-icons/gi";
 import { RiPagesLine } from "react-icons/ri";
+import { FaPersonShelter } from "react-icons/fa6";
 
 const DashboardPageSidebar = () => {
     const token = localStorage.getItem('token');
@@ -87,6 +88,11 @@ const DashboardPageSidebar = () => {
                     <Link to="/dashboard/encuestasrecojo" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
                         <RiPagesLine className="text-xl" />
                         {!isCollapsed && <span className="ml-3">Encuestas Recojo</span>}
+                    </Link>
+
+                    <Link to="/dashboard/historialvisitas" className={`flex items-center p-2 rounded hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}>
+                        <FaPersonShelter className="text-xl" />
+                        {!isCollapsed && <span className="ml-3">Historial de Visitas</span>}
                     </Link>
                 </nav>
             </div>
