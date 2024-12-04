@@ -14,6 +14,7 @@ import NotificationRepresentanteMain from "../components/Main/NotificationRepres
 import MedicamentosApp from "../components/Main/MedicamentosApp";
 import EncuestasEntregaApp from "../components/Main/EncuestasEntregaApp";
 import EncuestasRecojoApp from "../components/Main/EncuestasRecojoApp";
+import HistorialVisitasApp from "../components/Main/HistorialVisitasApp";
 
 function AppRoutes() {
     return (
@@ -33,6 +34,7 @@ function AppRoutes() {
                 <Route path="medicamentos" element={<MedicamentosApp/>} />
                 <Route path="encuestasentrega" element={<EncuestasEntregaApp/>} />
                 <Route path="encuestasrecojo" element={<EncuestasRecojoApp/>} />
+                <Route path="historialvisitas" element={<HistorialVisitasApp/>} />
             </Route>
 
             {/* Redirigir al login si no encuentra la ruta */}
