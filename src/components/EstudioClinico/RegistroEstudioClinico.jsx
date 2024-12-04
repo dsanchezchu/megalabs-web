@@ -77,49 +77,41 @@ const EstudiosClinicos = () => {
     const abrirDialogo = (estudio = null) => {
         setEditingEstudio(estudio);
         setOpenDialog(true);
-
+    
         if (estudio) {
-            // Encontrar el producto y cliente correspondientes
-            const productoSeleccionado = productos.find(p => p.nombre === estudio.nombreProducto);
-            const clienteSeleccionado = clientes.find(c => c.nombre === estudio.nombreMedico);
-
-            // Convertir los métodos analíticos a IDs si es necesario
+            console.log("Estudio en edición:", estudio); // Log para verificar datos
             const metodosIds = metodosAnaliticos
                 .filter(metodo => estudio.metodosAnaliticos.includes(metodo.nombre))
                 .map(metodo => metodo.idMetodo);
-
-            // Resetear el formulario con los valores existentes
+    
             reset({
-                productoId: productoSeleccionado?.idProducto || "",
-                clienteRuc: clienteSeleccionado?.ruc || "",
+                productoId: estudio.productoId,
+                clienteRuc: estudio.clienteRuc,
                 fecha: new Date(estudio.fechaAuditoria).toISOString().split('T')[0],
-                resultado: estudio.resultado || "",
+                resultado: estudio.resultado,
                 metodosAnaliticosIds: metodosIds,
-                estado: estudio.estado || "EN_PRUEBAS"
-            });
-        } else {
-            // Resetear con valores por defecto para nuevo registro
-            reset({
-                productoId: "",
-                clienteRuc: "",
-                fecha: "",
-                resultado: "",
-                metodosAnaliticosIds: [],
-                estado: "EN_PRUEBAS"
+                estado: estudio.estado,
             });
         }
-    };
+    };    
 
     // Registrar o actualizar un estudio clínico
     const onSubmit = async (data) => {
-        console.log("Datos enviados:", data); // Verifica los datos antes de enviarlos
         try {
-            if (editingEstudio) {
-                await actualizarEstudioClinico(editingEstudio.idControl, data);
-            } else {
-                await registrarEstudioClinico(data);
-            }
-            buscar(); // Actualizar la tabla después de guardar
+            const body = {
+                idControl: editingEstudio.idControl,
+                productoId: editingEstudio.productoId,
+                fecha: editingEstudio.fecha,
+                metodosAnaliticosIds: editingEstudio.metodosAnaliticosIds,
+                clienteRuc: editingEstudio.clienteRuc,
+                ...data,
+            };
+    
+            console.log("Datos enviados:", body);
+    
+            await actualizarEstudioClinico(editingEstudio.idControl, body);
+    
+            buscar();
             setOpenDialog(false);
         } catch (error) {
             console.error("Error al guardar el estudio clínico:", error);
@@ -179,105 +171,147 @@ const EstudiosClinicos = () => {
                 </Table>
             </TableContainer>
 
-            {/* Botón para crear estudio clínico */}
-            <Button variant="contained" color="primary" onClick={() => abrirDialogo()} style={{ marginTop: "1rem" }}>
-                Crear Estudio Clínico
-            </Button>
 
             {/* Diálogo de registro/edición */}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>{editingEstudio ? "Editar" : "Registrar"} Estudio Clínico</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <Controller
-                            name="productoId"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Autocomplete
-                                    options={productos}
-                                    getOptionLabel={(option) => 
-                                        typeof option === 'string' 
-                                            ? option 
-                                            : option?.nombre 
-                                                ? `${option.nombre} (${option.idProducto})`
-                                                : ''
-                                    }
-                                    value={productos.find(p => p.idProducto === field.value) || null}
-                                    onChange={(_, newValue) => field.onChange(newValue?.idProducto || "")}
-                                    renderInput={(params) => (
+                        {editingEstudio ? (
+                            // Modo edición: solo mostrar estado y resultado
+                            <>
+                                <Controller
+                                    name="resultado"
+                                    control={control}
+                                    render={({ field }) => (
                                         <TextField 
-                                            {...params} 
-                                            label="Producto" 
+                                            {...field} 
+                                            label="Resultado" 
                                             fullWidth 
-                                            margin="normal"
-                                            required 
+                                            multiline
+                                            rows={4}
+                                            sx={{ 
+                                                mt: 2, 
+                                                mb: 2,
+                                                '& .MuiInputBase-root': {
+                                                    minHeight: '120px'
+                                                }
+                                            }}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-                        <Controller
-                            name="clienteRuc"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Autocomplete
-                                    options={clientes}
-                                    getOptionLabel={(option) => 
-                                        typeof option === 'string'
-                                            ? option
-                                            : option?.nombre
-                                                ? `${option.nombre} (${option.ruc})`
-                                                : ''
-                                    }
-                                    value={clientes.find(c => c.ruc === field.value) || null}
-                                    onChange={(_, newValue) => field.onChange(newValue?.ruc || "")}
-                                    renderInput={(params) => (
-                                        <TextField 
-                                            {...params} 
-                                            label="Cliente" 
+                                <Controller
+                                    name="estado"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select 
+                                            {...field} 
                                             fullWidth 
-                                            margin="normal"
-                                            required 
+                                            label="Estado"
+                                            sx={{ mt: 2, mb: 2 }}
+                                        >
+                                            <MenuItem value="EN_PRUEBAS">En Pruebas</MenuItem>
+                                            <MenuItem value="RECHAZADO">Rechazado</MenuItem>
+                                            <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+                                            <MenuItem value="APROBADO">Aprobado</MenuItem>
+                                        </Select>
+                                    )}
+                                />
+                            </>
+                        ) : (
+                            // Modo registro: mantener el formulario original
+                            <>
+                                <Controller
+                                    name="productoId"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            options={productos}
+                                            getOptionLabel={(option) => 
+                                                typeof option === 'string' 
+                                                    ? option 
+                                                    : option?.nombre 
+                                                        ? `${option.nombre} (${option.idProducto})`
+                                                        : ''
+                                            }
+                                            value={productos.find(p => p.idProducto === field.value) || null}
+                                            onChange={(_, newValue) => field.onChange(newValue?.idProducto || "")}
+                                            renderInput={(params) => (
+                                                <TextField 
+                                                    {...params} 
+                                                    label="Producto" 
+                                                    fullWidth 
+                                                    margin="normal"
+                                                    required 
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-                        <Controller
-                            name="metodosAnaliticosIds"
-                            control={control}
-                            defaultValue={[]}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    multiple
-                                    fullWidth
-                                    margin="normal"
-                                    value={field.value || []}
-                                    onChange={(e) => field.onChange(e.target.value)}
-                                >
-                                    {metodosAnaliticos.map((metodo) => (
-                                        <MenuItem key={metodo.idMetodo} value={metodo.idMetodo}>
-                                            {metodo.nombre}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            )}
-                        />
-                        <Controller
-                            name="fecha"
-                            control={control}
-                            render={({ field }) => (
-                                <TextField {...field} label="Fecha" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
-                            )}
-                        />
-                        <Controller
-                            name="resultado"
-                            control={control}
-                            render={({ field }) => <TextField {...field} label="Resultado" fullWidth margin="normal" />}
-                        />
+                                <Controller
+                                    name="clienteRuc"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            options={clientes}
+                                            getOptionLabel={(option) => 
+                                                typeof option === 'string'
+                                                    ? option
+                                                    : option?.nombre
+                                                        ? `${option.nombre} (${option.ruc})`
+                                                        : ''
+                                            }
+                                            value={clientes.find(c => c.ruc === field.value) || null}
+                                            onChange={(_, newValue) => field.onChange(newValue?.ruc || "")}
+                                            renderInput={(params) => (
+                                                <TextField 
+                                                    {...params} 
+                                                    label="Cliente" 
+                                                    fullWidth 
+                                                    margin="normal"
+                                                    required 
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="metodosAnaliticosIds"
+                                    control={control}
+                                    defaultValue={[]}
+                                    render={({ field }) => (
+                                        <Select
+                                            {...field}
+                                            multiple
+                                            fullWidth
+                                            margin="normal"
+                                            value={field.value || []}
+                                            onChange={(e) => field.onChange(e.target.value)}
+                                        >
+                                            {metodosAnaliticos.map((metodo) => (
+                                                <MenuItem key={metodo.idMetodo} value={metodo.idMetodo}>
+                                                    {metodo.nombre}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    )}
+                                />
+                                <Controller
+                                    name="fecha"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField {...field} label="Fecha" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
+                                    )}
+                                />
+                                <Controller
+                                    name="resultado"
+                                    control={control}
+                                    render={({ field }) => <TextField {...field} label="Resultado" fullWidth margin="normal" />}
+                                />
+                            </>
+                        )}
                     </form>
                 </DialogContent>
                 <DialogActions>
